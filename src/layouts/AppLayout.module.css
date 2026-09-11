@@ -1,0 +1,16 @@
+.app {
+    min-height: 100vh;
+    display: flex;
+    background: #ffffff;
+}
+
+.main {
+    min-width: 0;
+    flex: 1;
+}
+
+.content {
+    min-height: calc(100vh - 76px);
+    padding: 32px;
+    background: #ffffff;
+}

@@ -1,0 +1,189 @@
+.documentGrid,
+.documentList {
+    display: grid;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.documentGrid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.documentList {
+    grid-template-columns: 1fr;
+}
+
+.documentCard {
+    position: relative;
+    min-height: 190px;
+    overflow: hidden;
+    border: 1px solid #e9e9ee;
+    border-radius: 10px;
+    background: white;
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.documentCard:hover {
+    border-color: #cbc7f7;
+    box-shadow: 0 8px 24px rgb(36 36 41 / 7%);
+    transform: translateY(-2px);
+}
+
+.cardButton {
+    width: 100%;
+    height: 100%;
+    display: block;
+    padding: 20px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+}
+
+.documentIcon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+.purple {
+    background: #eeedff;
+    color: #5b4fe9;
+}
+
+.orange {
+    background: #fff0df;
+    color: #e48b32;
+}
+
+.blue {
+    background: #e5f3ff;
+    color: #3b8dcc;
+}
+
+.green {
+    background: #e3f7ed;
+    color: #2caa6b;
+}
+
+.cardContent h3 {
+    margin: 0;
+    color: #29292f;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.cardContent p {
+    min-height: 34px;
+    margin: 7px 0 18px;
+    color: #94949c;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.cardMeta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #a1a1aa;
+    font-size: 11px;
+}
+
+.cardMeta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.moreButton {
+    position: absolute;
+    top: 15px;
+    right: 13px;
+    width: 29px;
+    height: 29px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #a1a1aa;
+    cursor: pointer;
+}
+
+.moreButton:hover {
+    background: #f3f3f6;
+    color: #4d4d57;
+}
+
+.listCard {
+    min-height: 88px;
+}
+
+.listCard .cardButton {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+}
+
+.listCard .documentIcon {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.listCard .cardContent {
+    min-width: 0;
+    flex: 1;
+}
+
+.listCard .cardContent p {
+    min-height: 0;
+    margin: 5px 0 9px;
+}
+
+.emptyState {
+    margin-top: 20px;
+    padding: 72px 24px;
+    border: 1px dashed #dcdce4;
+    border-radius: 11px;
+    background: #fdfdfe;
+    text-align: center;
+}
+
+.emptyIcon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 14px;
+    border-radius: 12px;
+    background: #eeedff;
+    color: #5b4fe9;
+}
+
+.emptyState h3 {
+    margin: 0;
+    color: #34343b;
+    font-size: 15px;
+}
+
+.emptyState p {
+    margin: 7px 0 18px;
+    color: #a1a1aa;
+    font-size: 13px;
+}
+
+.emptyState button {
+    padding: 9px 13px;
+    border: 0;
+    border-radius: 7px;
+    background: #5b4fe9;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 650;
+}

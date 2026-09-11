@@ -1,0 +1,96 @@
+.dashboard {
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.pageHeader {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: #8f8f98;
+    font-size: 12px;
+}
+
+.pageHeader h2 {
+    margin: 0;
+    color: #242429;
+    font-size: clamp(26px, 4vw, 34px);
+    letter-spacing: -0.045em;
+}
+
+.description {
+    margin: 9px 0 0;
+    color: #85858d;
+    font-size: 14px;
+}
+
+.createButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 7px;
+    background: #5b4fe9;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.createButton:hover {
+    background: #4b40d1;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 42px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ededf1;
+}
+
+.documentCount {
+    color: #8f8f98;
+    font-size: 12px;
+}
+
+.viewToggle {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid #e7e7ec;
+    border-radius: 7px;
+}
+
+.viewToggle button {
+    width: 29px;
+    height: 27px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #a1a1aa;
+    cursor: pointer;
+}
+
+.viewToggle button:hover,
+.selectedView {
+    background: #eeedff !important;
+    color: #5145d8 !important;
+}
+
+@media (max-width: 620px) {
+    .pageHeader {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

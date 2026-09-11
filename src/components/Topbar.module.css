@@ -1,0 +1,148 @@
+.topbar {
+    min-height: 76px;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid #e8e8ec;
+    background: white;
+}
+
+.heading {
+    min-width: 0;
+}
+
+.eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    color: #a1a1aa;
+    font-size: 11px;
+}
+
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #71717a;
+}
+
+.titleRow h1 {
+    margin: 0;
+    color: #242429;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.searchBox {
+    width: 230px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    border: 1px solid #e6e6eb;
+    border-radius: 7px;
+    color: #a1a1aa;
+    background: #fcfcfd;
+}
+
+.searchBox:focus-within {
+    border-color: #9b95ef;
+    box-shadow: 0 0 0 3px rgb(91 79 233 / 10%);
+}
+
+.searchBox input {
+    min-width: 0;
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #303038;
+    font: inherit;
+    font-size: 12px;
+}
+
+.searchBox input::placeholder {
+    color: #a1a1aa;
+}
+
+kbd {
+    padding: 3px 5px;
+    border: 1px solid #e4e4e8;
+    border-radius: 4px;
+    color: #aaaab2;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.iconButton,
+.inviteButton {
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e6e6eb;
+    border-radius: 7px;
+    background: white;
+    color: #72727c;
+    cursor: pointer;
+}
+
+.iconButton {
+    position: relative;
+    width: 36px;
+}
+
+.notificationDot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 5px;
+    height: 5px;
+    border: 1px solid white;
+    border-radius: 50%;
+    background: #ef6b6b;
+}
+
+.inviteButton {
+    gap: 6px;
+    padding: 0 13px;
+    border-color: #242429;
+    background: #242429;
+    color: white;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.iconButton:hover {
+    background: #f7f7f9;
+}
+
+.inviteButton:hover {
+    background: #3a3a42;
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        padding: 14px 20px;
+    }
+
+    .searchBox {
+        width: 36px;
+        padding: 0 9px;
+    }
+
+    .searchBox input,
+    .searchBox kbd {
+        display: none;
+    }
+}

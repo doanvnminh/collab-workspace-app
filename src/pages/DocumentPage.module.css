@@ -1,0 +1,42 @@
+.page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 32px;
+    border: 0;
+    background: transparent;
+    color: #85858d;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.backButton:hover {
+    color: #5145d8;
+}
+
+.titleInput {
+    width: 100%;
+    margin-bottom: 24px;
+    border: 0;
+    outline: 0;
+    color: #242429;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.editor {
+    width: 100%;
+    min-height: 450px;
+    resize: vertical;
+    border: 0;
+    outline: 0;
+    color: #45454d;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1.7;
+}
