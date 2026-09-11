@@ -1,12 +1,18 @@
 import express from "express";
 import Document from "../models/Document.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.use(authenticate)
 
 // Get all documents
 router.get("/", async (req, res) => {
     try {
-        const documents = await Document.find().sort({ updatedAt: -1 });
+        // Get only this user's documents
+        const documents = await Document.find({
+            owner: req.userId,
+        });
 
         res.json(documents);
     } catch (error) {
@@ -19,7 +25,11 @@ router.get("/", async (req, res) => {
 // Get one document
 router.get("/:id", async (req, res) => {
     try {
-        const document = await Document.findById(req.params.id);
+        // Get one document owned by this user
+        const document = await Document.findOne({
+            _id: req.params.id,
+            owner: req.userId,
+        });
 
         if (!document) {
             return res.status(404).json({
@@ -41,6 +51,7 @@ router.post("/", async (req, res) => {
         const document = await Document.create({
             title: req.body.title || "Untitled document",
             content: req.body.content || "",
+            owner: req.userId,
         });
 
         res.status(201).json(document);
@@ -54,8 +65,11 @@ router.post("/", async (req, res) => {
 // Update a document
 router.put("/:id", async (req, res) => {
     try {
-        const document = await Document.findByIdAndUpdate(
-            req.params.id,
+        const document = await Document.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                owner: req.userId,
+            },
             {
                 title: req.body.title,
                 content: req.body.content,
