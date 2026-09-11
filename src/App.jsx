@@ -4,6 +4,7 @@ import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
 import DocumentPage from "./pages/DocumentPage";
 import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -12,9 +13,11 @@ function App() {
 
       <Route path="/login" element={<LoginPage />} />
 
-      <Route path="/app" element={<AppLayout title="My workspace" />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="documents/:documentId" element={<DocumentPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/app" element={<AppLayout title="My workspace" />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="documents/:documentId" element={<DocumentPage />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/app" replace />} />

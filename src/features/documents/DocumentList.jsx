@@ -6,6 +6,7 @@ export default function DocumentList({
     view,
     onOpenDocument,
     onCreateDocument,
+    onDeleteDocument,
 }) {
     if (documents.length === 0) {
         return (
@@ -24,10 +25,11 @@ export default function DocumentList({
         <div className={view === "list" ? styles.documentList : styles.documentGrid}>
             {documents.map((document) => (
                 <DocumentCard
-                    key={document.id}
+                    key={document._id}
                     document={document}
                     view={view}
                     onOpen={() => onOpenDocument(document)}
+                    onDelete={() => onDeleteDocument(document._id)}
                 />
             ))}
         </div>

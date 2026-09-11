@@ -9,6 +9,7 @@ import {
     Trash2,
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
+import LogoutButton from "./LogoutButton";
 
 const navigation = [
     { label: "All documents", icon: FileText },
@@ -84,6 +85,9 @@ export default function Sidebar() {
                     <div className={styles.profileText}>
                         <strong>Minh Đoàn</strong>
                         <span>Free plan</span>
+                    </div>
+                    <div>
+                        <LogoutButton />
                     </div>
                     <button
                         type="button"

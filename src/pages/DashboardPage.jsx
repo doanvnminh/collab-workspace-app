@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import {
     createDocument as createDocumentRequest,
     getDocuments,
+    deleteDocument,
 } from "../services/apiClient";
 
 
@@ -42,6 +43,7 @@ export default function DashboardPage() {
     const [error, setError] = useState("");
     const [view, setView] = useState("grid");
     const [isCreating, setIsCreating] = useState(false);
+    const [openMenuId, setOpenMenuId] = useState(null);
 
     useEffect(() => {
         async function loadDocuments() {
@@ -80,6 +82,30 @@ export default function DashboardPage() {
             setError(error.message);
         } finally {
             setIsCreating(false);
+        }
+    }
+
+    async function handleDelete(documentId) {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this document?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            await deleteDocument(documentId);
+
+            setDocuments((currentDocuments) =>
+                currentDocuments.filter(
+                    (document) => document._id !== documentId
+                )
+            );
+
+            setOpenMenuId(null);
+        } catch (error) {
+            window.alert(error.message);
         }
     }
 
@@ -144,6 +170,7 @@ export default function DashboardPage() {
                     view={view}
                     onOpenDocument={openDocument}
                     onCreateDocument={createDocument}
+                    onDeleteDocument={handleDelete}
                 />
             )}
         </section>

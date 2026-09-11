@@ -1,7 +1,7 @@
 import { Clock3, FileText, MoreHorizontal, Users } from "lucide-react";
 import styles from "./document.module.css";
 
-export default function DocumentCard({ document, view, onOpen }) {
+export default function DocumentCard({ document, view, onOpen, onDelete }) {
     const cardClassName = `${styles.documentCard} ${view === "list" ? styles.listCard : ""
         }`;
 
@@ -33,6 +33,10 @@ export default function DocumentCard({ document, view, onOpen }) {
                 type="button"
                 className={styles.moreButton}
                 aria-label={`More options for ${document.title}`}
+                onClick={(event) => {
+                    event.stopPropagation()
+                    onDelete()
+                }}
             >
                 <MoreHorizontal size={17} />
             </button>

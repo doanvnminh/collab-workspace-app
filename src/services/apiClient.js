@@ -60,3 +60,9 @@ export function loginUser(credentials) {
         body: JSON.stringify(credentials),
     });
 }
+
+export function deleteDocument(documentId) {
+    return request(`/documents/${documentId}`, {
+        method: "DELETE",
+    });
+}
