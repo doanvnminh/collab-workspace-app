@@ -12,54 +12,33 @@ import {
 } from "../services/apiClient";
 
 
-const initialDocuments = [
-    {
-        id: 1,
-        title: "Product roadmap",
-        description: "Plan the next milestones for the product team.",
-        updatedAt: "Just now",
-        collaborators: 4,
-        color: "purple",
-    },
-    {
-        id: 2,
-        title: "Marketing brief",
-        description: "Campaign goals, audience, and launch timeline.",
-        updatedAt: "Yesterday",
-        collaborators: 2,
-        color: "orange",
-    },
-    {
-        id: 3,
-        title: "Meeting notes",
-        description: "Notes and action items from the weekly meeting.",
-        updatedAt: "Sep 5, 2026",
-        collaborators: 3,
-        color: "blue",
-    },
-];
-
 export default function DashboardPage() {
     const [documents, setDocuments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [view, setView] = useState("grid");
     const [isCreating, setIsCreating] = useState(false);
-    const [openMenuId, setOpenMenuId] = useState(null);
     const [projects, setProjects] = useState([])
     const [activeProjectId, setActiveProjectId] = useState("")
 
     useEffect(() => {
         if (!activeProjectId) {
+            setDocuments([]);
+            setIsLoading(false);
             return;
         }
+
+        setIsLoading(true);
+        setError("");
 
         async function loadDocuments() {
             try {
                 const data = await getDocuments(activeProjectId);
                 setDocuments(data);
             } catch (error) {
-                console.error(error);
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
         }
 
@@ -77,7 +56,8 @@ export default function DashboardPage() {
                     setActiveProjectId(data[0]._id);
                 }
             } catch (error) {
-                console.error(error);
+                setError(error.message);
+                setIsLoading(false);
             }
         }
 
@@ -87,13 +67,17 @@ export default function DashboardPage() {
     const navigate = useNavigate();
 
     async function createDocument() {
+        if (!activeProjectId) {
+            setError("Create a project first.");
+            return;
+        }
         setIsCreating(true);
         setError("");
 
         try {
             const newDocument = await createDocumentRequest(activeProjectId, {
                 title: "Untitled document",
-                description: "Start writing something new.",
+                content: "",
             });
 
             setDocuments((currentDocuments) => [
@@ -126,8 +110,6 @@ export default function DashboardPage() {
                     (document) => document._id !== documentId
                 )
             );
-
-            setOpenMenuId(null);
         } catch (error) {
             window.alert(error.message);
         }

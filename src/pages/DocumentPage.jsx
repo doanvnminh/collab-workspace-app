@@ -5,36 +5,10 @@ import styles from "./DocumentPage.module.css";
 import Editor from "../features/editor/Editor";
 import { getDocument, updateDocument } from "../services/apiClient";
 
-const documentTitles = {
-    1: "Product roadmap",
-    2: "Marketing brief",
-    3: "Meeting notes",
-};
-
-function loadSavedDocument(documentId, fallbackDocument) {
-    const savedDocument = localStorage.getItem(
-        `collab-document-${documentId}`
-    );
-
-    if (!savedDocument) {
-        return fallbackDocument;
-    }
-
-    try {
-        return JSON.parse(savedDocument);
-    } catch {
-        return fallbackDocument;
-    }
-}
 
 export default function DocumentPage() {
     const { documentId } = useParams();
     const navigate = useNavigate();
-
-    const fallbackDocument = {
-        title: documentTitles[documentId] || "Untitled document",
-        content: "",
-    };
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");

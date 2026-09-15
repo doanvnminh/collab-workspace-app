@@ -1,9 +1,27 @@
-import { Clock3, FileText, MoreHorizontal, Users } from "lucide-react";
+import { Clock3, FileText, MoreHorizontal } from "lucide-react";
 import styles from "./document.module.css";
 
 export default function DocumentCard({ document, view, onOpen, onDelete }) {
     const cardClassName = `${styles.documentCard} ${view === "list" ? styles.listCard : ""
         }`;
+
+    const preview = document.content
+        ? document.content.replace(/<[^>]*>/g, "").slice(0, 100)
+        : "No content yet.";
+
+    function formatDate(value) {
+        if (!value) {
+            return "Just now";
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleDateString();
+    }
 
     return (
         <article className={cardClassName}>
@@ -14,17 +32,14 @@ export default function DocumentCard({ document, view, onOpen, onDelete }) {
 
                 <div className={styles.cardContent}>
                     <h3>{document.title}</h3>
-                    <p>{document.description}</p>
+                    <p>{preview}</p>
 
                     <div className={styles.cardMeta}>
                         <span>
                             <Clock3 size={13} />
-                            {document.updatedAt}
+                            {formatDate(document.updatedAt)}
                         </span>
-                        <span>
-                            <Users size={13} />
-                            {document.collaborators}
-                        </span>
+
                     </div>
                 </div>
             </button>

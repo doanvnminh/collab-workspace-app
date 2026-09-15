@@ -1,0 +1,40 @@
+.page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: #f7f7fa;
+}
+
+.card {
+    width: min(100%, 420px);
+    padding: 36px;
+    border: 1px solid #e7e7ed;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 12px 35px rgb(36 36 41 / 8%);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+}
+
+.logo {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: #242429;
+    color: white;
+    font-weight: 700;
+}
+
+.brandName {
+    color: #242429;
+    font-size: 18px;
+    font-weight: 700;
+}
