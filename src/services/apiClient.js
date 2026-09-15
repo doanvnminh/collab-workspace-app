@@ -99,3 +99,13 @@ export function createProject(projectData) {
 export function getProject(projectId) {
     return request(`/projects/${projectId}`);
 }
+
+export function registerUser(userData) {
+    return request("/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+    });
+}

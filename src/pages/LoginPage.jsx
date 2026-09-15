@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import AuthLayout from "../layouts/AuthLayout";
 import { loginUser } from "../services/apiClient";
+import styles from "./LoginPage.module.css";
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -34,13 +36,21 @@ function LoginPage() {
     }
 
     return (
-        <main>
-            <h1>Log in</h1>
+        <AuthLayout>
+            <h1 className={styles.title}>Welcome back</h1>
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">Email</label>
+            <p className={styles.subtitle}>
+                Log in to continue to your workspace.
+            </p>
+
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="email">
+                        Email
+                    </label>
+
                     <input
+                        className={styles.input}
                         id="email"
                         type="email"
                         value={email}
@@ -49,9 +59,13 @@ function LoginPage() {
                     />
                 </div>
 
-                <div>
-                    <label htmlFor="password">Password</label>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="password">
+                        Password
+                    </label>
+
                     <input
+                        className={styles.input}
                         id="password"
                         type="password"
                         value={password}
@@ -60,13 +74,24 @@ function LoginPage() {
                     />
                 </div>
 
-                {error && <p>{error}</p>}
+                {error && <p className={styles.error}>{error}</p>}
 
-                <button type="submit" disabled={isSubmitting}>
+                <button
+                    className={styles.submitButton}
+                    type="submit"
+                    disabled={isSubmitting}
+                >
                     {isSubmitting ? "Logging in..." : "Log in"}
                 </button>
             </form>
-        </main>
+
+            <p className={styles.footer}>
+                Don’t have an account?{" "}
+                <Link className={styles.link} to="/register">
+                    Create one
+                </Link>
+            </p>
+        </AuthLayout>
     );
 }
 

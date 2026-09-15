@@ -5,6 +5,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import DocumentPage from "./pages/DocumentPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Route path="/" element={<Navigate to="/app" replace />} />
 
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/app" element={<AppLayout title="My workspace" />}>
