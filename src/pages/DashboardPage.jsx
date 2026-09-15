@@ -7,6 +7,8 @@ import {
     createDocument as createDocumentRequest,
     getDocuments,
     deleteDocument,
+    getProjects,
+    createProject
 } from "../services/apiClient";
 
 
@@ -44,20 +46,42 @@ export default function DashboardPage() {
     const [view, setView] = useState("grid");
     const [isCreating, setIsCreating] = useState(false);
     const [openMenuId, setOpenMenuId] = useState(null);
+    const [projects, setProjects] = useState([])
+    const [activeProjectId, setActiveProjectId] = useState("")
 
     useEffect(() => {
+        if (!activeProjectId) {
+            return;
+        }
+
         async function loadDocuments() {
             try {
-                const data = await getDocuments();
+                const data = await getDocuments(activeProjectId);
                 setDocuments(data);
             } catch (error) {
-                setError(error.message);
-            } finally {
-                setIsLoading(false);
+                console.error(error);
             }
         }
 
         loadDocuments();
+    }, [activeProjectId]);
+
+    useEffect(() => {
+        async function loadProjects() {
+            try {
+                const data = await getProjects();
+
+                setProjects(data);
+
+                if (data.length > 0) {
+                    setActiveProjectId(data[0]._id);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        loadProjects();
     }, []);
 
     const navigate = useNavigate();
@@ -67,7 +91,7 @@ export default function DashboardPage() {
         setError("");
 
         try {
-            const newDocument = await createDocumentRequest({
+            const newDocument = await createDocumentRequest(activeProjectId, {
                 title: "Untitled document",
                 description: "Start writing something new.",
             });
@@ -109,6 +133,29 @@ export default function DashboardPage() {
         }
     }
 
+    async function handleCreateProject() {
+        const name = window.prompt("Enter a project name:");
+
+        if (!name || !name.trim()) {
+            return;
+        }
+
+        try {
+            const project = await createProject({
+                name: name.trim(),
+            });
+
+            setProjects((currentProjects) => [
+                project,
+                ...currentProjects,
+            ]);
+
+            setActiveProjectId(project._id);
+        } catch (error) {
+            window.alert(error.message);
+        }
+    }
+
     function openDocument(document) {
         navigate(`/app/documents/${document._id}`);
     }
@@ -122,6 +169,33 @@ export default function DashboardPage() {
                     <p className={styles.description}>
                         Continue working on your shared documents.
                     </p>
+                </div>
+
+                <div>
+                    <label htmlFor="project-select">
+                        Project
+                    </label>
+
+                    <select
+                        id="project-select"
+                        value={activeProjectId}
+                        onChange={(event) =>
+                            setActiveProjectId(event.target.value)
+                        }
+                    >
+                        {projects.map((project) => (
+                            <option key={project._id} value={project._id}>
+                                {project.name}
+                            </option>
+                        ))}
+                    </select>
+
+                    <button
+                        type="button"
+                        onClick={handleCreateProject}
+                    >
+                        New project
+                    </button>
                 </div>
 
                 <button

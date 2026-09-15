@@ -23,17 +23,22 @@ async function request(endpoint, options = {}) {
     return data;
 }
 
-export function getDocuments() {
-    return request("/documents");
+export function getDocuments(projectId) {
+    return request(
+        `/documents?projectId=${encodeURIComponent(projectId)}`
+    );
 }
 
-export function createDocument(documentData) {
+export function createDocument(projectId, documentData) {
     return request("/documents", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(documentData),
+        body: JSON.stringify({
+            ...documentData,
+            projectId,
+        }),
     });
 }
 
@@ -75,4 +80,22 @@ export function shareDocument(documentId, shareData) {
         },
         body: JSON.stringify(shareData),
     });
+}
+
+export function getProjects() {
+    return request("/projects");
+}
+
+export function createProject(projectData) {
+    return request("/projects", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectData),
+    });
+}
+
+export function getProject(projectId) {
+    return request(`/projects/${projectId}`);
 }
