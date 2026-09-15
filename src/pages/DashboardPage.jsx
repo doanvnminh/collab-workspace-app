@@ -2,7 +2,6 @@ import { Grid2X2, List, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import DocumentList from "../features/documents/DocumentList";
 import InvitationList from "../features/invitations/InvitationList";
-import InviteMemberDialog from "../features/invitations/InviteDialog";
 import styles from "./DashboardPage.module.css";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import {
@@ -18,7 +17,6 @@ export default function DashboardPage() {
     const [error, setError] = useState("");
     const [view, setView] = useState("grid");
     const [isCreating, setIsCreating] = useState(false);
-    const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
     const { activeProjectId, setActiveProjectId } = useOutletContext()
 
@@ -104,42 +102,18 @@ export default function DashboardPage() {
         navigate(`/app/documents/${document._id}`);
     }
 
-    function handleInvitationAccepted(project) {
-        setProjects((currentProjects) => {
-            const alreadyExists = currentProjects.some(
-                (item) => item._id === project._id
-            );
 
-            if (alreadyExists) {
-                return currentProjects;
-            }
-
-            return [project, ...currentProjects];
-        });
-
-        setActiveProjectId(project._id);
-    }
 
     return (
         <section className={styles.dashboard}>
             <div className={styles.pageHeader}>
                 <div>
-                    <p className={styles.eyebrow}>Your workspace</p>
                     <h2>Recent documents</h2>
-                    <p className={styles.description}>
-                        Continue working on your shared documents.
-                    </p>
                 </div>
 
 
 
-                <button
-                    type="button"
-                    disabled={!activeProjectId}
-                    onClick={() => setIsInviteDialogOpen(true)}
-                >
-                    Invite member
-                </button>
+
 
                 <button
                     type="button"
@@ -152,9 +126,6 @@ export default function DashboardPage() {
                 </button>
             </div>
 
-            <InvitationList
-                onAccepted={handleInvitationAccepted}
-            />
 
             <div className={styles.toolbar}>
                 <span className={styles.documentCount}>
@@ -195,12 +166,7 @@ export default function DashboardPage() {
                 />
             )}
 
-            {isInviteDialogOpen && activeProjectId && (
-                <InviteMemberDialog
-                    projectId={activeProjectId}
-                    onClose={() => setIsInviteDialogOpen(false)}
-                />
-            )}
+
         </section>
     );
 }

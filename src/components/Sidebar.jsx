@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
 import LogoutButton from "./LogoutButton";
+import { useState } from "react";
 
 const navigation = [
     { label: "All documents", icon: FileText },
@@ -18,13 +19,21 @@ const navigation = [
     { label: "Trash", icon: Trash2 },
 ];
 
-const recentDocuments = [
-    "Product roadmap",
-    "Marketing brief",
-    "Meeting notes",
-];
 
-export default function Sidebar() {
+export default function Sidebar({
+    projects = [],
+    activeProjectId,
+    onSelectProject,
+    onCreateProject,
+}) {
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
+    const savedUser = localStorage.getItem("user")
+
+    const currentUser = savedUser
+        ? JSON.parse(savedUser)
+        : null
+
     return (
         <aside className={styles.sidebar}>
             <div className={styles.brand}>
@@ -51,24 +60,41 @@ export default function Sidebar() {
             </nav>
 
             <div className={styles.section}>
-                <div className={styles.sectionHeading}>WORKSPACE</div>
-                <a href="#" className={styles.navItem}>
-                    <Folder size={17} strokeWidth={1.9} />
-                    <span>My workspace</span>
-                </a>
-            </div>
+                <div className={styles.sectionHeadingRow}>
+                    <div className={styles.sectionHeading}>
+                        WORKSPACE
+                    </div>
 
-            <div className={styles.section}>
-                <div className={styles.sectionHeading}>RECENT DOCUMENTS</div>
-                <div className={styles.recentList}>
-                    {recentDocuments.map((document) => (
-                        <a href="#" className={styles.recentItem} key={document}>
-                            <FileText size={15} strokeWidth={1.8} />
-                            <span>{document}</span>
-                        </a>
+                    <button
+                        type="button"
+                        className={styles.addWorkspaceButton}
+                        onClick={onCreateProject}
+                        aria-label="Create workspace"
+                    >
+                        <Plus size={14} />
+                    </button>
+                </div>
+
+                <div className={styles.workspaceList}>
+                    {projects.map((project) => (
+                        <button
+                            type="button"
+                            key={project._id}
+                            className={`${styles.navItem} ${styles.workspaceItem
+                                } ${project._id === activeProjectId
+                                    ? styles.active
+                                    : ""
+                                }`}
+                            onClick={() => onSelectProject(project._id)}
+                        >
+                            <Folder size={17} strokeWidth={1.9} />
+                            <span>{project.name}</span>
+                        </button>
                     ))}
                 </div>
             </div>
+
+
 
             <div className={styles.sidebarBottom}>
                 <a href="#" className={styles.navItem}>
@@ -81,21 +107,34 @@ export default function Sidebar() {
                 </a>
 
                 <div className={styles.profile}>
-                    <div className={styles.avatar}>M</div>
+                    <div className={styles.avatar}>
+                        {currentUser?.name?.charAt(0).toUpperCase() || "U"}
+                    </div>
                     <div className={styles.profileText}>
-                        <strong>Minh Đoàn</strong>
-                        <span>Free plan</span>
+                        <strong>{currentUser?.name || "User"}</strong>
+                        <span>{currentUser?.email || "No email available"}</span>
                     </div>
-                    <div>
-                        <LogoutButton />
+                    <div className={styles.profileActions}>
+                        <button
+                            type="button"
+                            className={styles.profileMenu}
+                            aria-label="Open profile menu"
+                            aria-expanded={isProfileMenuOpen}
+                            onClick={() =>
+                                setIsProfileMenuOpen((isOpen) => !isOpen)
+                            }
+                        >
+                            •••
+                        </button>
+
+                        {isProfileMenuOpen && (
+                            <div className={styles.profileDropdown}>
+                                <LogoutButton
+                                    className={styles.logoutButton}
+                                />
+                            </div>
+                        )}
                     </div>
-                    <button
-                        type="button"
-                        className={styles.profileMenu}
-                        aria-label="Open profile menu"
-                    >
-                        •••
-                    </button>
                 </div>
             </div>
         </aside>

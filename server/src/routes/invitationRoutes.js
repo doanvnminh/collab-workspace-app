@@ -60,19 +60,37 @@ router.post("/:invitationId/accept", async (req, res) => {
 
         const project = await Project.findById(invitation.project);
 
+        if (!project) {
+            return res.status(404).json({
+                message: "Project not found",
+            });
+        }
+
+        const currentUserId = req.userId.toString();
+        const ownerId = project.owner.toString();
+
+        if (ownerId === currentUserId) {
+            return res.status(409).json({
+                message: "You are already the owner of this workspace",
+            });
+        }
+
         const alreadyMember = project.members.some(
-            (member) =>
-                member.user.toString() === req.userId.toString()
+            (member) => member.user.toString() === currentUserId
         );
 
-        if (!alreadyMember) {
-            project.members.push({
-                user: req.userId,
-                role: invitation.role,
+        if (alreadyMember) {
+            return res.status(409).json({
+                message: "You are already a member of this workspace",
             });
-
-            await project.save();
         }
+
+        project.members.push({
+            user: req.userId,
+            role: invitation.role,
+        });
+
+        await project.save();
 
         invitation.status = "accepted";
         await invitation.save();

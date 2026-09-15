@@ -1,0 +1,30 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 48px;
+    padding: 0 32px;
+    border-bottom: 1px solid #e8e8ec;
+    background: white;
+}
+
+.link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 48px;
+    border-bottom: 2px solid transparent;
+    color: #85858d;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.link:hover {
+    color: #5145d8;
+}
+
+.active {
+    border-bottom-color: #5b4fe9;
+    color: #5145d8;
+    font-weight: 650;
+}

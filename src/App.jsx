@@ -6,6 +6,8 @@ import DocumentPage from "./pages/DocumentPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RegisterPage from "./pages/RegisterPage";
+import ContributorsPage from "./pages/ContributorsPage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route path="/app" element={<AppLayout title="My workspace" />}>
           <Route index element={<DashboardPage />} />
           <Route path="documents/:documentId" element={<DocumentPage />} />
+          <Route path="contributors" element={<ContributorsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
         </Route>
       </Route>
 

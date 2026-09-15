@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
+import WorkspaceNavbar from "../components/WorkspaceNavbar";
 import {
     createProject,
     getProjects,
@@ -77,6 +78,8 @@ export default function AppLayout({ title }) {
                     onSelectProject={setActiveProjectId}
                     onCreateProject={handleCreateProject}
                 />
+
+                <WorkspaceNavbar />
 
                 <main className={styles.content}>
                     <Outlet

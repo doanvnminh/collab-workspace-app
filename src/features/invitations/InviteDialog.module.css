@@ -1,0 +1,162 @@
+.inviteButton {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    background: #5b4fe9;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.inviteButton:hover {
+    background: #4c40d8;
+}
+
+.inviteButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.overlay {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(20, 20, 28, 0.42);
+}
+
+.modal {
+    width: min(100%, 430px);
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 20px 60px rgba(20, 20, 35, 0.2);
+}
+
+.modalHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 24px 18px;
+    border-bottom: 1px solid #eeeeF2;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    color: #202027;
+    font-size: 19px;
+}
+
+.modalHeader p {
+    margin: 7px 0 0;
+    color: #92929d;
+    font-size: 13px;
+}
+
+.closeButton {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #85858f;
+    cursor: pointer;
+}
+
+.closeButton:hover {
+    background: #f2f2f5;
+    color: #25252c;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 24px;
+}
+
+.form label {
+    margin-top: 6px;
+    color: #4a4a55;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form input,
+.form select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #dcdce4;
+    border-radius: 8px;
+    padding: 11px 12px;
+    outline: none;
+    color: #25252c;
+    font: inherit;
+}
+
+.form input:focus,
+.form select:focus {
+    border-color: #5b4fe9;
+    box-shadow: 0 0 0 3px rgba(91, 79, 233, 0.12);
+}
+
+.error,
+.success {
+    margin: 6px 0 0;
+    font-size: 13px;
+}
+
+.error {
+    color: #c0392b;
+}
+
+.success {
+    color: #26834a;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.cancelButton,
+.submitButton {
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cancelButton {
+    border: 1px solid #dedee5;
+    background: white;
+    color: #666671;
+}
+
+.cancelButton:hover {
+    background: #f7f7f9;
+}
+
+.submitButton {
+    border: none;
+    background: #5b4fe9;
+    color: white;
+}
+
+.submitButton:hover {
+    background: #4c40d8;
+}
+
+.cancelButton:disabled,
+.submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

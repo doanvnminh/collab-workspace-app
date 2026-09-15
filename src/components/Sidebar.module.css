@@ -168,3 +168,74 @@
     cursor: pointer;
     letter-spacing: 1px;
 }
+
+.profileActions {
+    position: relative;
+}
+
+.profileDropdown {
+    position: absolute;
+    right: 0;
+    bottom: 34px;
+    z-index: 10;
+    width: 125px;
+    padding: 5px;
+    border: 1px solid #e6e6eb;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 10px 25px rgb(36 36 41 / 12%);
+}
+
+.logoutButton {
+    width: 100%;
+    padding: 8px 9px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #c43d4b;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: left;
+}
+
+.logoutButton:hover {
+    background: #fff0f1;
+}
+
+.sectionHeadingRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 5px;
+}
+
+.workspaceList {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.workspaceItem {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+.addWorkspaceButton {
+    display: grid;
+    place-items: center;
+    padding: 3px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #a1a1aa;
+    cursor: pointer;
+}
+
+.addWorkspaceButton:hover {
+    background: #eeedff;
+    color: #5145d8;
+}

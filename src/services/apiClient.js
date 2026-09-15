@@ -135,3 +135,9 @@ export function createInvitation(projectId, invitationData) {
         body: JSON.stringify(invitationData),
     });
 }
+
+export async function removeProjectMember(projectId, userId) {
+    return request(`/projects/${projectId}/members/${userId}`, {
+        method: "DELETE",
+    });
+}

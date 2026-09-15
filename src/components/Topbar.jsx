@@ -77,14 +77,14 @@ export default function Topbar({
                     <kbd>⌘ K</kbd>
                 </label>
 
-                <button
+                {/*<button
                     type="button"
                     className={styles.iconButton}
                     aria-label="Notifications"
                 >
                     <Bell size={18} />
                     <span className={styles.notificationDot} />
-                </button>
+                </button>*/}
             </div>
         </header>
     );

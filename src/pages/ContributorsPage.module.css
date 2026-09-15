@@ -1,0 +1,137 @@
+.page {
+    padding: 36px 40px;
+    max-width: 900px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: #9999a5;
+    font-size: 13px;
+}
+
+.header h1 {
+    margin: 0;
+    color: #17171c;
+    font-size: 28px;
+}
+
+.header p:not(.eyebrow) {
+    margin: 10px 0 0;
+    color: #888894;
+}
+
+.count {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #f0efff;
+    color: #5145d8;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.list {
+    overflow: hidden;
+    border: 1px solid #e7e7ed;
+    border-radius: 12px;
+    background: white;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eeeeF2;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.avatar {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 50%;
+    background: #25252c;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info strong {
+    color: #25252c;
+    font-size: 14px;
+}
+
+.info span {
+    color: #92929d;
+    font-size: 13px;
+}
+
+.role {
+    color: #686875;
+    font-size: 13px;
+    text-transform: capitalize;
+}
+
+.message {
+    padding: 40px;
+    color: #888894;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rowActions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+}
+
+.removeButton {
+    border: none;
+    border-radius: 7px;
+    padding: 7px 10px;
+    background: #fff0ef;
+    color: #c0392b;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.removeButton:hover {
+    background: #ffe1df;
+}
+
+.removeButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error {
+    margin: 0 0 16px;
+    color: #c0392b;
+    font-size: 13px;
+}

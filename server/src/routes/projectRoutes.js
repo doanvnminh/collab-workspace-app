@@ -2,6 +2,7 @@ import express from "express";
 import Project from "../models/Project.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
 import Invitation from "../models/Invitation.js";
+import User from "../models/User.js";
 
 const router = express.Router();
 
@@ -63,8 +64,9 @@ router.get("/:id", async (req, res) => {
                 { owner: req.userId },
                 { "members.user": req.userId },
             ],
-        });
-
+        })
+            .populate("owner", "name email")
+            .populate("members.user", "name email");
         if (!project) {
             return res.status(404).json({
                 message: "Project not found",
@@ -110,6 +112,30 @@ router.post("/:projectId/invitations", async (req, res) => {
 
         const normalizedEmail = email.trim().toLowerCase();
 
+        const invitedUser = await User.findOne({
+            email: normalizedEmail,
+        });
+
+        if (invitedUser) {
+            const invitedUserId = invitedUser._id.toString();
+
+            if (project.owner.toString() === invitedUserId) {
+                return res.status(409).json({
+                    message: "The workspace owner is already a member",
+                });
+            }
+
+            const alreadyMember = project.members.some(
+                (member) => member.user.toString() === invitedUserId
+            );
+
+            if (alreadyMember) {
+                return res.status(409).json({
+                    message: "This user is already a workspace member",
+                });
+            }
+        }
+
         const existingInvitation = await Invitation.findOne({
             project: project._id,
             email: normalizedEmail,
@@ -138,6 +164,54 @@ router.post("/:projectId/invitations", async (req, res) => {
 
         res.status(500).json({
             message: "Failed to create invitation",
+        });
+    }
+});
+
+router.delete("/:projectId/members/:userId", async (req, res) => {
+    try {
+        const { projectId, userId } = req.params;
+
+        const project = await Project.findById(projectId);
+
+        if (!project) {
+            return res.status(404).json({ message: "Workspace not found" });
+        }
+
+        if (project.owner.toString() !== req.userId) {
+            return res.status(403).json({
+                message: "Only the workspace owner can remove contributors",
+            });
+        }
+
+        if (project.owner.toString() === userId) {
+            return res.status(400).json({
+                message: "The workspace owner cannot be removed",
+            });
+        }
+
+        const memberExists = project.members.some(
+            (member) => member.user.toString() === userId
+        );
+
+        if (!memberExists) {
+            return res.status(404).json({
+                message: "Contributor not found",
+            });
+        }
+
+        project.members = project.members.filter(
+            (member) => member.user.toString() !== userId
+        );
+
+        await project.save();
+
+        res.json({
+            message: "Contributor removed successfully",
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to remove contributor",
         });
     }
 });
