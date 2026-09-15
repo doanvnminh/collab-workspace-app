@@ -19,6 +19,22 @@ const documentSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+
+        collaborators: [
+            {
+                user: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
+                },
+
+                role: {
+                    type: String,
+                    enum: ["viewer", "editor"],
+                    default: "viewer",
+                },
+            },
+        ],
     },
     {
         timestamps: true,

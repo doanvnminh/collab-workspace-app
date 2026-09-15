@@ -66,3 +66,13 @@ export function deleteDocument(documentId) {
         method: "DELETE",
     });
 }
+
+export function shareDocument(documentId, shareData) {
+    return request(`/documents/${documentId}/share`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(shareData),
+    });
+}
