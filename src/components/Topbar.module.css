@@ -10,6 +10,7 @@
 }
 
 .heading {
+    position: relative;
     min-width: 0;
 }
 
@@ -123,6 +124,69 @@ kbd {
     font-weight: 650;
 }
 
+.workspaceButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #71717a;
+    cursor: pointer;
+}
+
+.workspaceButton:hover {
+    color: #242429;
+}
+
+.workspaceMenu {
+    position: absolute;
+    z-index: 10;
+    top: 58px;
+    left: 0;
+    width: 220px;
+    padding: 7px;
+    border: 1px solid #e6e6eb;
+    border-radius: 9px;
+    background: white;
+    box-shadow: 0 12px 30px rgb(36 36 41 / 12%);
+}
+
+.workspaceOption,
+.createWorkspaceButton {
+    width: 100%;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    font-size: 12px;
+}
+
+.workspaceOption:hover,
+.createWorkspaceButton:hover {
+    background: #f3f3f7;
+}
+
+.selectedWorkspace {
+    background: #eeedff;
+    color: #5b4fe9;
+    font-weight: 650;
+}
+
+.menuDivider {
+    height: 1px;
+    margin: 6px 0;
+    background: #eeeeF2;
+}
+
+.createWorkspaceButton {
+    color: #5b4fe9;
+    font-weight: 650;
+}
+
 .iconButton:hover {
     background: #f7f7f9;
 }
@@ -130,6 +194,8 @@ kbd {
 .inviteButton:hover {
     background: #3a3a42;
 }
+
+
 
 @media (max-width: 760px) {
     .topbar {

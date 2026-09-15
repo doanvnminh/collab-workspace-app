@@ -4,13 +4,11 @@ import DocumentList from "../features/documents/DocumentList";
 import InvitationList from "../features/invitations/InvitationList";
 import InviteMemberDialog from "../features/invitations/InviteDialog";
 import styles from "./DashboardPage.module.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import {
     createDocument as createDocumentRequest,
     getDocuments,
-    deleteDocument,
-    getProjects,
-    createProject
+    deleteDocument
 } from "../services/apiClient";
 
 
@@ -20,9 +18,9 @@ export default function DashboardPage() {
     const [error, setError] = useState("");
     const [view, setView] = useState("grid");
     const [isCreating, setIsCreating] = useState(false);
-    const [projects, setProjects] = useState([])
-    const [activeProjectId, setActiveProjectId] = useState("")
     const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+
+    const { activeProjectId, setActiveProjectId } = useOutletContext()
 
     useEffect(() => {
         if (!activeProjectId) {
@@ -48,24 +46,6 @@ export default function DashboardPage() {
         loadDocuments();
     }, [activeProjectId]);
 
-    useEffect(() => {
-        async function loadProjects() {
-            try {
-                const data = await getProjects();
-
-                setProjects(data);
-
-                if (data.length > 0) {
-                    setActiveProjectId(data[0]._id);
-                }
-            } catch (error) {
-                setError(error.message);
-                setIsLoading(false);
-            }
-        }
-
-        loadProjects();
-    }, []);
 
     const navigate = useNavigate();
 
@@ -118,28 +98,7 @@ export default function DashboardPage() {
         }
     }
 
-    async function handleCreateProject() {
-        const name = window.prompt("Enter a project name:");
 
-        if (!name || !name.trim()) {
-            return;
-        }
-
-        try {
-            const project = await createProject({
-                name: name.trim(),
-            });
-
-            setProjects((currentProjects) => [
-                project,
-                ...currentProjects,
-            ]);
-
-            setActiveProjectId(project._id);
-        } catch (error) {
-            window.alert(error.message);
-        }
-    }
 
     function openDocument(document) {
         navigate(`/app/documents/${document._id}`);
@@ -172,32 +131,7 @@ export default function DashboardPage() {
                     </p>
                 </div>
 
-                <div>
-                    <label htmlFor="project-select">
-                        Project
-                    </label>
 
-                    <select
-                        id="project-select"
-                        value={activeProjectId}
-                        onChange={(event) =>
-                            setActiveProjectId(event.target.value)
-                        }
-                    >
-                        {projects.map((project) => (
-                            <option key={project._id} value={project._id}>
-                                {project.name}
-                            </option>
-                        ))}
-                    </select>
-
-                    <button
-                        type="button"
-                        onClick={handleCreateProject}
-                    >
-                        New project
-                    </button>
-                </div>
 
                 <button
                     type="button"
