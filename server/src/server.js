@@ -5,6 +5,7 @@ import documentRoutes from "./routes/documentRoutes.js";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js"
 import projectRoutes from "./routes/projectRoutes.js"
+import invitationRoutes from "./routes/invitationRoutes.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/api/documents", documentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/invitations", invitationRoutes);
 
 connectDB()
     .then(() => {

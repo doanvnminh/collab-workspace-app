@@ -109,3 +109,29 @@ export function registerUser(userData) {
         body: JSON.stringify(userData),
     });
 }
+
+export function getInvitations() {
+    return request("/invitations");
+}
+
+export function acceptInvitation(invitationId) {
+    return request(`/invitations/${invitationId}/accept`, {
+        method: "POST",
+    });
+}
+
+export function declineInvitation(invitationId) {
+    return request(`/invitations/${invitationId}/decline`, {
+        method: "POST",
+    });
+}
+
+export function createInvitation(projectId, invitationData) {
+    return request(`/projects/${projectId}/invitations`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(invitationData),
+    });
+}

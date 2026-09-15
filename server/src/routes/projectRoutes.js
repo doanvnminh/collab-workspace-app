@@ -1,6 +1,7 @@
 import express from "express";
 import Project from "../models/Project.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
+import Invitation from "../models/Invitation.js";
 
 const router = express.Router();
 
@@ -76,6 +77,67 @@ router.get("/:id", async (req, res) => {
 
         res.status(500).json({
             message: "Failed to get project",
+        });
+    }
+});
+
+router.post("/:projectId/invitations", async (req, res) => {
+    try {
+        const { email, role = "viewer" } = req.body;
+
+        if (!email || !email.trim()) {
+            return res.status(400).json({
+                message: "Email is required",
+            });
+        }
+
+        if (!["viewer", "editor"].includes(role)) {
+            return res.status(400).json({
+                message: "Role must be viewer or editor",
+            });
+        }
+
+        const project = await Project.findOne({
+            _id: req.params.projectId,
+            owner: req.userId,
+        });
+
+        if (!project) {
+            return res.status(404).json({
+                message: "Project not found or you are not the owner",
+            });
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const existingInvitation = await Invitation.findOne({
+            project: project._id,
+            email: normalizedEmail,
+            status: "pending",
+        });
+
+        if (existingInvitation) {
+            return res.status(409).json({
+                message: "This user already has a pending invitation",
+            });
+        }
+
+        const invitation = await Invitation.create({
+            project: project._id,
+            invitedBy: req.userId,
+            email: normalizedEmail,
+            role,
+        });
+
+        res.status(201).json({
+            message: "Invitation created successfully",
+            invitation,
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to create invitation",
         });
     }
 });

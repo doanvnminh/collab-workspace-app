@@ -1,6 +1,8 @@
 import { Grid2X2, List, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import DocumentList from "../features/documents/DocumentList";
+import InvitationList from "../features/invitations/InvitationList";
+import InviteMemberDialog from "../features/invitations/InviteDialog";
 import styles from "./DashboardPage.module.css";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,6 +22,7 @@ export default function DashboardPage() {
     const [isCreating, setIsCreating] = useState(false);
     const [projects, setProjects] = useState([])
     const [activeProjectId, setActiveProjectId] = useState("")
+    const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
     useEffect(() => {
         if (!activeProjectId) {
@@ -142,6 +145,22 @@ export default function DashboardPage() {
         navigate(`/app/documents/${document._id}`);
     }
 
+    function handleInvitationAccepted(project) {
+        setProjects((currentProjects) => {
+            const alreadyExists = currentProjects.some(
+                (item) => item._id === project._id
+            );
+
+            if (alreadyExists) {
+                return currentProjects;
+            }
+
+            return [project, ...currentProjects];
+        });
+
+        setActiveProjectId(project._id);
+    }
+
     return (
         <section className={styles.dashboard}>
             <div className={styles.pageHeader}>
@@ -182,6 +201,14 @@ export default function DashboardPage() {
 
                 <button
                     type="button"
+                    disabled={!activeProjectId}
+                    onClick={() => setIsInviteDialogOpen(true)}
+                >
+                    Invite member
+                </button>
+
+                <button
+                    type="button"
                     className={styles.createButton}
                     onClick={createDocument}
                     disabled={isCreating}
@@ -190,6 +217,10 @@ export default function DashboardPage() {
                     {isCreating ? "Creating..." : "New document"}
                 </button>
             </div>
+
+            <InvitationList
+                onAccepted={handleInvitationAccepted}
+            />
 
             <div className={styles.toolbar}>
                 <span className={styles.documentCount}>
@@ -227,6 +258,13 @@ export default function DashboardPage() {
                     onOpenDocument={openDocument}
                     onCreateDocument={createDocument}
                     onDeleteDocument={handleDelete}
+                />
+            )}
+
+            {isInviteDialogOpen && activeProjectId && (
+                <InviteMemberDialog
+                    projectId={activeProjectId}
+                    onClose={() => setIsInviteDialogOpen(false)}
                 />
             )}
         </section>
