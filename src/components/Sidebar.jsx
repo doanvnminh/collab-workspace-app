@@ -7,6 +7,7 @@ import {
     Share2,
     Star,
     Trash2,
+    MoreHorizontal,
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
 import LogoutButton from "./LogoutButton";
@@ -25,14 +26,19 @@ export default function Sidebar({
     activeProjectId,
     onSelectProject,
     onCreateProject,
+    onRenameProject,
+    onDeleteProject,
 }) {
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const [openMenuId, setOpenMenuId] = useState(null)
 
     const savedUser = localStorage.getItem("user")
 
     const currentUser = savedUser
         ? JSON.parse(savedUser)
         : null
+
+    const currentUserId = currentUser?._id || currentUser?.id
 
     return (
         <aside className={styles.sidebar}>
@@ -65,32 +71,101 @@ export default function Sidebar({
                         WORKSPACE
                     </div>
 
-                    <button
+                    {/*<button
                         type="button"
                         className={styles.addWorkspaceButton}
                         onClick={onCreateProject}
                         aria-label="Create workspace"
                     >
                         <Plus size={14} />
-                    </button>
+                    </button>*/}
                 </div>
 
                 <div className={styles.workspaceList}>
-                    {projects.map((project) => (
-                        <button
-                            type="button"
-                            key={project._id}
-                            className={`${styles.navItem} ${styles.workspaceItem
-                                } ${project._id === activeProjectId
-                                    ? styles.active
-                                    : ""
-                                }`}
-                            onClick={() => onSelectProject(project._id)}
-                        >
-                            <Folder size={17} strokeWidth={1.9} />
-                            <span>{project.name}</span>
-                        </button>
-                    ))}
+                    {projects.map((project) => {
+                        const projectOwnerId =
+                            typeof project.owner === "string"
+                                ? project.owner
+                                : project.owner?._id;
+
+                        const isOwner = String(projectOwnerId) === String(currentUserId);
+
+                        return (
+                            <div
+                                key={project._id}
+                                className={styles.workspaceRow}
+                            >
+                                <button
+                                    type="button"
+                                    className={`${styles.workspaceButton} ${activeProjectId === project._id
+                                        ? styles.activeWorkspace
+                                        : ""
+                                        }`}
+                                    onClick={() => {
+                                        onSelectProject(project._id);
+                                        setOpenMenuId(null);
+                                    }}
+                                >
+                                    <span className={styles.workspaceIcon}>●</span>
+                                    <span>{project.name}</span>
+                                </button>
+
+                                {isOwner && (
+                                    <div className={styles.workspaceMenuWrapper}>
+                                        <button
+                                            type="button"
+                                            className={styles.workspaceMenuButton}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+
+                                                setOpenMenuId((currentId) =>
+                                                    currentId === project._id
+                                                        ? null
+                                                        : project._id
+                                                );
+                                            }}
+                                            aria-label={`Options for ${project.name}`}
+                                        >
+                                            <MoreHorizontal size={17} />
+                                        </button>
+
+                                        {openMenuId === project._id && (
+                                            <div className={styles.workspaceMenu}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setOpenMenuId(null);
+                                                        onRenameProject(project._id, project.name);
+                                                    }}
+                                                >
+                                                    Rename
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className={styles.deleteMenuItem}
+                                                    onClick={() => {
+                                                        setOpenMenuId(null);
+                                                        onDeleteProject(project._id);
+                                                    }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+
+                    <button
+                        type="button"
+                        className={styles.newWorkspaceButton}
+                        onClick={onCreateProject}
+                    >
+                        + New workspace
+                    </button>
                 </div>
             </div>
 

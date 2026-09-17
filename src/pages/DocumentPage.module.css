@@ -40,3 +40,57 @@
     font-size: 16px;
     line-height: 1.7;
 }
+
+.statusBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 14px 0;
+    color: #888894;
+    font-size: 13px;
+}
+
+.saveStatus {
+    color: #888894;
+}
+
+.presence {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.presenceLabel {
+    color: #888894;
+    font-size: 12px;
+}
+
+.avatarStack {
+    display: flex;
+    align-items: center;
+}
+
+.presenceAvatar,
+.moreUsers {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    margin-left: -6px;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: #5b4fe9;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.presenceAvatar:first-child {
+    margin-left: 0;
+}
+
+.moreUsers {
+    background: #eeeeF3;
+    color: #666671;
+}

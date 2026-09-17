@@ -1,7 +1,6 @@
 import { Grid2X2, List, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import DocumentList from "../features/documents/DocumentList";
-import InvitationList from "../features/invitations/InvitationList";
 import styles from "./DashboardPage.module.css";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import {

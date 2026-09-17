@@ -141,3 +141,16 @@ export async function removeProjectMember(projectId, userId) {
         method: "DELETE",
     });
 }
+
+export async function renameProject(projectId, name) {
+    return request(`/projects/${projectId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ name }),
+    });
+}
+
+export async function deleteProject(projectId) {
+    return request(`/projects/${projectId}`, {
+        method: "DELETE",
+    });
+}

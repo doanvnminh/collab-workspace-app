@@ -239,3 +239,122 @@
     background: #eeedff;
     color: #5145d8;
 }
+
+.workspaceList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.workspaceRow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.workspaceButton {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: transparent;
+    color: #777783;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+.workspaceButton:hover,
+.activeWorkspace {
+    background: #f0efff;
+    color: #5145d8;
+}
+
+.workspaceButton span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.workspaceIcon {
+    color: currentColor;
+    font-size: 10px;
+}
+
+.workspaceMenuWrapper {
+    position: relative;
+}
+
+.workspaceMenuButton {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #9999a3;
+    cursor: pointer;
+}
+
+.workspaceMenuButton:hover {
+    background: #eeeeF3;
+    color: #454550;
+}
+
+.workspaceMenu {
+    position: absolute;
+    z-index: 20;
+    top: 34px;
+    right: 0;
+    width: 130px;
+    padding: 5px;
+    border: 1px solid #e4e4ea;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 8px 24px rgba(30, 30, 45, 0.14);
+}
+
+.workspaceMenu button {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    padding: 9px 10px;
+    background: transparent;
+    color: #4f4f59;
+    text-align: left;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.workspaceMenu button:hover {
+    background: #f4f4f7;
+}
+
+.workspaceMenu .deleteMenuItem {
+    color: #c0392b;
+}
+
+.workspaceMenu .deleteMenuItem:hover {
+    background: #fff0ef;
+}
+
+.newWorkspaceButton {
+    margin-top: 5px;
+    border: none;
+    background: transparent;
+    color: #777783;
+    text-align: left;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.newWorkspaceButton:hover {
+    color: #5145d8;
+}

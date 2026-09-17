@@ -3,6 +3,7 @@ import Project from "../models/Project.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
 import Invitation from "../models/Invitation.js";
 import User from "../models/User.js";
+import Document from "../models/Document.js";
 
 const router = express.Router();
 
@@ -212,6 +213,83 @@ router.delete("/:projectId/members/:userId", async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Failed to remove contributor",
+        });
+    }
+});
+
+router.patch("/:id", async (req, res) => {
+    try {
+        const { name } = req.body;
+
+        if (!name || !name.trim()) {
+            return res.status(400).json({
+                message: "Workspace name is required",
+            });
+        }
+
+        const project = await Project.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                owner: req.userId,
+            },
+            {
+                name: name.trim(),
+            },
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+
+        if (!project) {
+            return res.status(404).json({
+                message: "Workspace not found or you are not the owner",
+            });
+        }
+
+        res.json(project);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to rename workspace",
+        });
+    }
+});
+
+router.delete("/:id", async (req, res) => {
+    try {
+        const project = await Project.findOne({
+            _id: req.params.id,
+            owner: req.userId,
+        });
+
+        if (!project) {
+            return res.status(404).json({
+                message: "Workspace not found or you are not the owner",
+            });
+        }
+
+        await Document.deleteMany({
+            project: project._id,
+        });
+
+        await Invitation.deleteMany({
+            project: project._id,
+        });
+
+        await Project.deleteOne({
+            _id: project._id,
+        });
+
+        res.json({
+            message: "Workspace deleted successfully",
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to delete workspace",
         });
     }
 });

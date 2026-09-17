@@ -1,9 +1,21 @@
 import { ArrowLeft } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./DocumentPage.module.css";
 import Editor from "../features/editor/Editor";
-import { getDocument, updateDocument } from "../services/apiClient";
+import { getDocument } from "../services/apiClient";
+import socket, { connectSocket } from "../services/socket";
+
+function getInitials(user) {
+    const name = user?.name || user?.email || "?";
+
+    return name
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase();
+}
 
 
 export default function DocumentPage() {
@@ -16,32 +28,69 @@ export default function DocumentPage() {
     const [error, setError] = useState("");
 
     const [saveStatus, setSaveStatus] = useState("Saved");
+    const [activeUsers, setActiveUsers] = useState([]);
+
+    const hasLoadedDocumentRef = useRef(false)
+    const isApplyingRemoteUpdateRef = useRef(false)
 
     useEffect(() => {
-        if (isLoading) {
+        if (
+            isLoading ||
+            !hasLoadedDocumentRef.current
+        ) {
             return;
         }
 
-        const timeoutId = setTimeout(async () => {
-            try {
-                setSaveStatus("Saving...");
+        if (isApplyingRemoteUpdateRef.current) {
+            isApplyingRemoteUpdateRef.current = false;
+            return;
+        }
 
-                await updateDocument(documentId, {
+
+        const timeoutId = setTimeout(() => {
+            if (!socket.connected) {
+                setSaveStatus("Disconnected");
+                return;
+            }
+
+            setSaveStatus("Saving...");
+
+            socket.emit(
+                "document:update",
+                {
+                    documentId,
                     title,
                     content,
-                });
+                },
+                (result) => {
+                    console.log(
+                        "Document update result:",
+                        result
+                    );
 
-                setSaveStatus("Saved");
-            } catch (error) {
-                console.error(error);
-                setSaveStatus("Save failed");
-            }
+                    if (!result?.ok) {
+                        setSaveStatus(
+                            `Save failed: ${result?.error || "Unknown error"
+                            }`
+                        );
+
+                        return;
+                    }
+
+                    setSaveStatus("Saved");
+                }
+            );
         }, 700);
 
         return () => {
             clearTimeout(timeoutId);
         };
-    }, [documentId, title, content, isLoading]);
+    }, [
+        documentId,
+        title,
+        content,
+        isLoading,
+    ]);
 
     useEffect(() => {
         async function loadDocument() {
@@ -50,6 +99,7 @@ export default function DocumentPage() {
 
                 setTitle(data.title);
                 setContent(data.content || "");
+                hasLoadedDocumentRef.current = true
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -60,6 +110,68 @@ export default function DocumentPage() {
         loadDocument();
     }, [documentId]);
 
+    useEffect(() => {
+        function handleConnect() {
+            console.log("Socket connected:", socket.id);
+
+            socket.emit("document:join", documentId);
+        }
+
+        function handleConnectError(error) {
+            console.error(
+                "Socket connection failed:",
+                error.message
+            );
+        }
+
+        function handleDocumentError(data) {
+            console.error(
+                "Document socket error:",
+                data.message
+            );
+        }
+
+        function handleDocumentUpdated(updatedDocument) {
+            if (updatedDocument.documentId !== documentId) {
+                return;
+            }
+
+            isApplyingRemoteUpdateRef.current = true;
+
+            setTitle(updatedDocument.title);
+            setContent(updatedDocument.content);
+            setSaveStatus("Saved");
+        }
+
+        function handlePresence(users) {
+            setActiveUsers(users);
+        }
+
+        socket.on("connect", handleConnect);
+        socket.on("connect_error", handleConnectError);
+        socket.on("document:error", handleDocumentError);
+        socket.on("document:updated", handleDocumentUpdated);
+        socket.on("document:presence", handlePresence);
+
+        if (socket.connected) {
+            handleConnect();
+        } else {
+            connectSocket();
+        }
+
+        return () => {
+            socket.emit("document:leave", documentId);
+
+            socket.off("connect", handleConnect);
+            socket.off("connect_error", handleConnectError);
+            socket.off("document:error", handleDocumentError);
+            socket.off("document:updated", handleDocumentUpdated);
+            socket.off("document:presence", handlePresence);
+
+            socket.disconnect();
+        };
+    }, [documentId]);
+
     function handleTitleChange(value) {
         setTitle(value);
         setSaveStatus("Saving...");
@@ -68,6 +180,10 @@ export default function DocumentPage() {
     function handleContentChange(value) {
         setContent(value);
         setSaveStatus("Saving...");
+    }
+
+    function handleDocumentError(data) {
+        console.error("Document socket error:", data.message);
     }
 
     if (isLoading) {
@@ -89,7 +205,37 @@ export default function DocumentPage() {
                 All documents
             </button>
 
-            <p>{saveStatus}</p>
+            <div className={styles.statusBar}>
+                <span className={styles.saveStatus}>
+                    {saveStatus}
+                </span>
+
+                {activeUsers.length > 0 && (
+                    <div className={styles.presence}>
+                        <span className={styles.presenceLabel}>
+                            Active now
+                        </span>
+
+                        <div className={styles.avatarStack}>
+                            {activeUsers.slice(0, 4).map((user) => (
+                                <span
+                                    key={user.id}
+                                    className={styles.presenceAvatar}
+                                    title={`${user.name} (${user.email})`}
+                                >
+                                    {getInitials(user)}
+                                </span>
+                            ))}
+
+                            {activeUsers.length > 4 && (
+                                <span className={styles.moreUsers}>
+                                    +{activeUsers.length - 4}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <Editor
                 title={title}
