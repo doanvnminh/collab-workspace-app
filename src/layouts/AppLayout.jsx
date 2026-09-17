@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import WorkspaceNavbar from "../components/WorkspaceNavbar";
@@ -13,8 +13,10 @@ import styles from "./AppLayout.module.css";
 
 export default function AppLayout({ title }) {
     const [projects, setProjects] = useState([]);
-    const [activeProjectId, setActiveProjectId] =
-        useState("");
+    const [activeProjectId, setActiveProjectId] = useState("");
+
+    const navigate = useNavigate()
+    const location = useLocation()
 
     useEffect(() => {
         async function loadProjects() {
@@ -54,6 +56,14 @@ export default function AppLayout({ title }) {
             setActiveProjectId(project._id);
         } catch (error) {
             window.alert(error.message);
+        }
+    }
+
+    function handleProjectChange(projectId) {
+        setActiveProjectId(projectId);
+
+        if (location.pathname.startsWith("/app/documents/")) {
+            navigate("/app", { replace: true });
         }
     }
 
@@ -127,7 +137,7 @@ export default function AppLayout({ title }) {
             <Sidebar
                 projects={projects}
                 activeProjectId={activeProjectId}
-                onSelectProject={setActiveProjectId}
+                onSelectProject={handleProjectChange}
                 onCreateProject={handleCreateProject}
                 onRenameProject={handleRenameProject}
                 onDeleteProject={handleDeleteProject}
@@ -138,7 +148,7 @@ export default function AppLayout({ title }) {
                     title={workspaceTitle}
                     projects={projects}
                     activeProjectId={activeProjectId}
-                    onSelectProject={setActiveProjectId}
+                    onSelectProject={handleProjectChange}
                     onCreateProject={handleCreateProject}
                 />
 

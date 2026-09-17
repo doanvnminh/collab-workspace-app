@@ -17,6 +17,7 @@ export default function Editor({
     }, [content]);
 
     function executeCommand(command, value = null) {
+
         contentRef.current.focus();
 
         window.document.execCommand(command, false, value);
@@ -36,13 +37,11 @@ export default function Editor({
             <EditorToolbar onCommand={executeCommand} />
 
             <div
-                ref={contentRef}
-                className={styles.content}
-                contentEditable
+                contentEditable={true}
                 suppressContentEditableWarning
-                onInput={(event) => onContentChange(event.currentTarget.innerHTML)}
-                role="textbox"
-                aria-label="Document content"
+                onInput={(event) =>
+                    onContentChange(event.currentTarget.innerHTML)
+                }
             />
         </div>
     );

@@ -69,3 +69,8 @@
     background: #eeedff;
     color: #5145d8;
 }
+
+.readOnlyContent {
+    background: #fafafa;
+    cursor: default;
+}

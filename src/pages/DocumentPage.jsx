@@ -30,22 +30,22 @@ export default function DocumentPage() {
     const [saveStatus, setSaveStatus] = useState("Saved");
     const [activeUsers, setActiveUsers] = useState([]);
 
+
     const hasLoadedDocumentRef = useRef(false)
     const isApplyingRemoteUpdateRef = useRef(false)
 
     useEffect(() => {
+        if (isApplyingRemoteUpdateRef.current) {
+            isApplyingRemoteUpdateRef.current = false;
+            return;
+        }
+
         if (
             isLoading ||
             !hasLoadedDocumentRef.current
         ) {
             return;
         }
-
-        if (isApplyingRemoteUpdateRef.current) {
-            isApplyingRemoteUpdateRef.current = false;
-            return;
-        }
-
 
         const timeoutId = setTimeout(() => {
             if (!socket.connected) {
@@ -63,17 +63,8 @@ export default function DocumentPage() {
                     content,
                 },
                 (result) => {
-                    console.log(
-                        "Document update result:",
-                        result
-                    );
-
                     if (!result?.ok) {
-                        setSaveStatus(
-                            `Save failed: ${result?.error || "Unknown error"
-                            }`
-                        );
-
+                        setSaveStatus("Save failed");
                         return;
                     }
 
@@ -90,12 +81,14 @@ export default function DocumentPage() {
         title,
         content,
         isLoading,
+
     ]);
 
     useEffect(() => {
         async function loadDocument() {
             try {
                 const data = await getDocument(documentId);
+
 
                 setTitle(data.title);
                 setContent(data.content || "");
@@ -236,6 +229,7 @@ export default function DocumentPage() {
                     </div>
                 )}
             </div>
+
 
             <Editor
                 title={title}

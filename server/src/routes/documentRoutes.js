@@ -71,6 +71,15 @@ router.get("/:id", async (req, res) => {
             });
         }
 
+        const currentUserId = String(req.userId);
+
+        const isOwner =
+            String(project.owner) === currentUserId;
+
+        const member = project.members.find(
+            (item) => String(item.user) === currentUserId
+        );
+
         res.json(document);
     } catch (error) {
         console.error(error);
@@ -96,14 +105,7 @@ router.post("/", async (req, res) => {
             _id: projectId,
             $or: [
                 { owner: req.userId },
-                {
-                    members: {
-                        $elemMatch: {
-                            user: req.userId,
-                            role: "editor",
-                        },
-                    },
-                },
+                { "members.user": req.userId },
             ],
         });
 
@@ -145,14 +147,7 @@ router.put("/:id", async (req, res) => {
             _id: document.project,
             $or: [
                 { owner: req.userId },
-                {
-                    members: {
-                        $elemMatch: {
-                            user: req.userId,
-                            role: "editor",
-                        },
-                    },
-                },
+                { "members.user": req.userId },
             ],
         });
 

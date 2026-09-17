@@ -6,7 +6,6 @@ import styles from "./InviteDialog.module.css";
 export default function InviteMember({ projectId }) {
     const [isOpen, setIsOpen] = useState(false);
     const [email, setEmail] = useState("");
-    const [role, setRole] = useState("viewer");
     const [isSending, setIsSending] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -33,7 +32,7 @@ export default function InviteMember({ projectId }) {
         try {
             await createInvitation(projectId, {
                 email: email.trim(),
-                role,
+
             });
 
             setSuccess("Invitation sent successfully.");
@@ -97,14 +96,7 @@ export default function InviteMember({ projectId }) {
 
                             <label htmlFor="invite-role">Role</label>
 
-                            <select
-                                id="invite-role"
-                                value={role}
-                                onChange={(event) => setRole(event.target.value)}
-                            >
-                                <option value="viewer">Viewer</option>
-                                <option value="editor">Editor</option>
-                            </select>
+
 
                             {error && <p className={styles.error}>{error}</p>}
                             {success && <p className={styles.success}>{success}</p>}

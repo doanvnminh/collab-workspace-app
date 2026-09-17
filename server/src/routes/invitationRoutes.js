@@ -87,7 +87,7 @@ router.post("/:invitationId/accept", async (req, res) => {
 
         project.members.push({
             user: req.userId,
-            role: invitation.role,
+            role: "editor",
         });
 
         await project.save();

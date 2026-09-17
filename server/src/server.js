@@ -199,14 +199,7 @@ io.on("connection", (socket) => {
                     _id: document.project,
                     $or: [
                         { owner: socket.userId },
-                        {
-                            members: {
-                                $elemMatch: {
-                                    user: socket.userId,
-                                    role: "editor",
-                                },
-                            },
-                        },
+                        { "members.user": socket.userId },
                     ],
                 });
 

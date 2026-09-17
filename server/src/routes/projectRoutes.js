@@ -86,7 +86,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/:projectId/invitations", async (req, res) => {
     try {
-        const { email, role = "viewer" } = req.body;
+        const { email } = req.body;
 
         if (!email || !email.trim()) {
             return res.status(400).json({
@@ -153,7 +153,7 @@ router.post("/:projectId/invitations", async (req, res) => {
             project: project._id,
             invitedBy: req.userId,
             email: normalizedEmail,
-            role,
+            role: "editor",
         });
 
         res.status(201).json({

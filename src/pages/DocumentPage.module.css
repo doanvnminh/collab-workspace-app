@@ -94,3 +94,9 @@
     background: #eeeeF3;
     color: #666671;
 }
+
+.readOnlyNotice {
+    margin: 12px 0;
+    color: #888894;
+    font-size: 13px;
+}
