@@ -56,14 +56,21 @@ export default function CollaborativeEditor({
 
     const ydoc = useMemo(() => new Y.Doc(), [roomName]);
 
+    const token = localStorage.getItem("token");
+
     const provider = useMemo(
         () =>
             new WebsocketProvider(
                 "ws://127.0.0.1:5000",
                 roomName,
-                ydoc
+                ydoc,
+                {
+                    params: {
+                        token: token || "",
+                    },
+                }
             ),
-        [roomName, ydoc]
+        [roomName, ydoc, token]
     );
 
 

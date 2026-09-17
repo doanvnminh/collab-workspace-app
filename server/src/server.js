@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { createServer } from "node:http";
-import { Server } from "socket.io";
 import documentRoutes from "./routes/documentRoutes.js";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js"
@@ -42,12 +41,7 @@ const {
     )
 );
 
-const io = new Server(httpServer, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-    },
-});
+
 
 const yjsWss = new WebSocketServer({
     noServer: true,
@@ -59,50 +53,92 @@ yjsWss.on("connection", (connection, request) => {
     setupWSConnection(connection, request);
 });
 
-httpServer.on("upgrade", (request, socket, head) => {
+httpServer.on("upgrade", async (request, socket, head) => {
+
     const requestUrl = new URL(
         request.url || "/",
         "http://127.0.0.1"
     );
 
-    // Let Socket.IO handle its own WebSocket path.
-    if (requestUrl.pathname.startsWith("/socket.io")) {
+    // Leave Socket.IO connections alone.
+    if (!requestUrl.pathname.startsWith("/document-")) {
+        socket.destroy();
         return;
     }
 
-    yjsWss.handleUpgrade(
-        request,
-        socket,
-        head,
-        (webSocket) => {
-            yjsWss.emit(
-                "connection",
-                webSocket,
-                request
-            );
+    try {
+        const token = requestUrl.searchParams.get("token");
+
+
+        if (!token) {
+            throw new Error("Missing authentication token");
         }
-    );
+
+        const decodedToken = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        const roomName = decodeURIComponent(
+            requestUrl.pathname.slice(1)
+        );
+
+        const prefix = "document-";
+
+        if (!roomName.startsWith(prefix)) {
+            throw new Error("Invalid document room");
+        }
+
+        const documentId = roomName.slice(prefix.length);
+
+        const document = await Document.findById(
+            documentId
+        ).select("project");
+
+        if (!document) {
+            throw new Error("Document not found");
+        }
+
+        const project = await Project.findOne({
+            _id: document.project,
+            $or: [
+                { owner: decodedToken.userId },
+                { "members.user": decodedToken.userId },
+            ],
+        });
+
+        if (!project) {
+            throw new Error("User has no document access");
+        }
+
+        yjsWss.handleUpgrade(
+            request,
+            socket,
+            head,
+            (webSocket) => {
+                yjsWss.emit(
+                    "connection",
+                    webSocket,
+                    request
+                );
+            }
+        );
+    } catch (error) {
+        console.error(
+            "Yjs authorization failed:",
+            error.message
+        );
+
+        socket.write(
+            "HTTP/1.1 401 Unauthorized\r\n" +
+            "Connection: close\r\n\r\n"
+        );
+
+        socket.destroy();
+    }
 });
 
-async function broadcastPresence(room) {
-    const sockets = await io.in(room).fetchSockets();
 
-    const users = [];
-    const seenUserIds = new Set();
-
-    for (const connectedSocket of sockets) {
-        const user = connectedSocket.data.user;
-
-        if (!user || seenUserIds.has(user.id)) {
-            continue;
-        }
-
-        seenUserIds.add(user.id);
-        users.push(user);
-    }
-
-    io.in(room).emit("document:presence", users);
-}
 
 app.use(cors());
 app.use(express.json());
@@ -122,214 +158,5 @@ connectDB()
         console.error("Server startup failed:", error);
     });
 
-io.use((socket, next) => {
-    try {
-        const token = socket.handshake.auth?.token;
 
-        if (!token) {
-            return next(new Error("Authentication required"));
-        }
 
-        const decodedToken = jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
-
-        socket.userId = decodedToken.userId;
-
-        next();
-    } catch {
-        next(new Error("Invalid authentication token"));
-    }
-});
-
-io.on("connection", (socket) => {
-    console.log("Socket connected:", socket.id);
-
-    socket.on("document:join", async (documentId) => {
-        try {
-            const document = await Document.findById(documentId);
-
-            if (!document) {
-                return socket.emit("document:error", {
-                    message: "Document not found",
-                });
-            }
-
-            const project = await Project.findOne({
-                _id: document.project,
-                $or: [
-                    { owner: socket.userId },
-                    { "members.user": socket.userId },
-                ],
-            });
-
-            if (!project) {
-                return socket.emit("document:error", {
-                    message: "You do not have access to this document",
-                });
-            }
-
-            const user = await User.findById(socket.userId)
-                .select("name email");
-
-            if (!user) {
-                return socket.emit("document:error", {
-                    message: "User not found",
-                });
-            }
-
-            const previousDocumentId =
-                socket.data.documentId;
-
-            if (
-                previousDocumentId &&
-                previousDocumentId !== documentId
-            ) {
-                socket.leave(
-                    `document:${previousDocumentId}`
-                );
-
-                await broadcastPresence(
-                    `document:${previousDocumentId}`
-                );
-            }
-
-            socket.data.documentId = documentId;
-            socket.data.user = {
-                id: user._id.toString(),
-                name: user.name,
-                email: user.email,
-            };
-
-            const room = `document:${documentId}`;
-
-            socket.join(room);
-
-            await broadcastPresence(room);
-
-            console.log(
-                `${socket.id} joined document ${documentId}`
-            );
-        } catch (error) {
-            console.error(error);
-
-            socket.emit("document:error", {
-                message: "Failed to join document",
-            });
-        }
-    });
-
-    socket.on(
-        "document:update",
-        async (data, callback) => {
-            const respond =
-                typeof callback === "function"
-                    ? callback
-                    : () => { };
-
-            try {
-                const {
-                    documentId,
-                    title,
-                    content,
-                } = data;
-
-                if (!documentId) {
-                    return respond({
-                        ok: false,
-                        error: "documentId is required",
-                    });
-                }
-
-                const document =
-                    await Document.findById(documentId);
-
-                if (!document) {
-                    return respond({
-                        ok: false,
-                        error: "Document not found",
-                    });
-                }
-
-                const project = await Project.findOne({
-                    _id: document.project,
-                    $or: [
-                        { owner: socket.userId },
-                        { "members.user": socket.userId },
-                    ],
-                });
-
-                if (!project) {
-                    return respond({
-                        ok: false,
-                        error: "You cannot edit this document",
-                    });
-                }
-
-                if (typeof title === "string") {
-                    document.title = title;
-                }
-
-                if (typeof content === "string") {
-                    document.content = content;
-                }
-
-                await document.save();
-
-                const updatedDocument = {
-                    documentId: document._id.toString(),
-                    title: document.title,
-                    content: document.content,
-                };
-
-                socket
-                    .to(`document:${documentId}`)
-                    .emit(
-                        "document:updated",
-                        updatedDocument
-                    );
-
-                respond({
-                    ok: true,
-                    document: updatedDocument,
-                });
-            } catch (error) {
-                console.error(error);
-
-                respond({
-                    ok: false,
-                    error: "Failed to update document",
-                });
-            }
-        }
-    );
-
-    socket.on("document:leave", async (documentId) => {
-        const room = `document:${documentId}`;
-
-        socket.leave(room);
-
-        if (socket.data.documentId === documentId) {
-            delete socket.data.documentId;
-        }
-
-        await broadcastPresence(room);
-    });
-
-    socket.on("disconnect", async () => {
-        const documentId =
-            socket.data.documentId;
-
-        if (documentId) {
-            await broadcastPresence(
-                `document:${documentId}`
-            );
-        }
-
-        console.log(
-            "Socket disconnected:",
-            socket.id
-        );
-    });
-});
