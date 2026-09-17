@@ -25,6 +25,12 @@ const documentSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+
+        collaborationState: {
+            type: Buffer,
+            default: null,
+            select: false,
+        },
     },
     {
         timestamps: true,
