@@ -7,11 +7,13 @@ import {
     Share2,
     Star,
     Trash2,
-    MoreHorizontal,
+    Bell,
+
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
 import LogoutButton from "./LogoutButton";
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 const navigation = [
     { label: "All documents", icon: FileText },
@@ -25,12 +27,15 @@ export default function Sidebar({
     projects = [],
     activeProjectId,
     onSelectProject,
-    onCreateProject,
-    onRenameProject,
-    onDeleteProject,
+    isCreatingProject,
+    onStartCreateProject,
+    onSubmitCreateProject,
+    onCancelCreateProject,
+
 }) {
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-    const [openMenuId, setOpenMenuId] = useState(null)
+    const [newWorkspaceName, setNewWorkspaceName] = useState("");
+    const [isSubmittingWorkspace, setIsSubmittingWorkspace] = useState(false);
 
     const savedUser = localStorage.getItem("user")
 
@@ -39,6 +44,24 @@ export default function Sidebar({
         : null
 
     const currentUserId = currentUser?._id || currentUser?.id
+
+    async function handleWorkspaceSubmit(event) {
+        event.preventDefault();
+
+        if (!newWorkspaceName.trim()) {
+            return;
+        }
+
+        setIsSubmittingWorkspace(true);
+
+        const wasCreated = await onSubmitCreateProject(newWorkspaceName);
+
+        if (wasCreated) {
+            setNewWorkspaceName("");
+        }
+
+        setIsSubmittingWorkspace(false);
+    }
 
     return (
         <aside className={styles.sidebar}>
@@ -82,13 +105,33 @@ export default function Sidebar({
                 </div>
 
                 <div className={styles.workspaceList}>
-                    {projects.map((project) => {
-                        const projectOwnerId =
-                            typeof project.owner === "string"
-                                ? project.owner
-                                : project.owner?._id;
+                    {isCreatingProject && (
+                        <form
+                            className={styles.workspaceCreateForm}
+                            onSubmit={handleWorkspaceSubmit}
+                        >
+                            <span className={styles.workspaceIcon}>●</span>
 
-                        const isOwner = String(projectOwnerId) === String(currentUserId);
+                            <input
+                                className={styles.workspaceCreateInput}
+                                value={newWorkspaceName}
+                                onChange={(event) =>
+                                    setNewWorkspaceName(event.target.value)
+                                }
+                                onKeyDown={(event) => {
+                                    if (event.key === "Escape") {
+                                        setNewWorkspaceName("");
+                                        onCancelCreateProject();
+                                    }
+                                }}
+                                placeholder="Workspace name"
+                                autoFocus
+                                disabled={isSubmittingWorkspace}
+                                aria-label="New workspace name"
+                            />
+                        </form>
+                    )}
+                    {projects.map((project) => {
 
                         return (
                             <div
@@ -110,51 +153,8 @@ export default function Sidebar({
                                     <span>{project.name}</span>
                                 </button>
 
-                                {isOwner && (
-                                    <div className={styles.workspaceMenuWrapper}>
-                                        <button
-                                            type="button"
-                                            className={styles.workspaceMenuButton}
-                                            onClick={(event) => {
-                                                event.stopPropagation();
 
-                                                setOpenMenuId((currentId) =>
-                                                    currentId === project._id
-                                                        ? null
-                                                        : project._id
-                                                );
-                                            }}
-                                            aria-label={`Options for ${project.name}`}
-                                        >
-                                            <MoreHorizontal size={17} />
-                                        </button>
 
-                                        {openMenuId === project._id && (
-                                            <div className={styles.workspaceMenu}>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setOpenMenuId(null);
-                                                        onRenameProject(project._id, project.name);
-                                                    }}
-                                                >
-                                                    Rename
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    className={styles.deleteMenuItem}
-                                                    onClick={() => {
-                                                        setOpenMenuId(null);
-                                                        onDeleteProject(project._id);
-                                                    }}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
                             </div>
                         );
                     })}
@@ -162,7 +162,7 @@ export default function Sidebar({
                     <button
                         type="button"
                         className={styles.newWorkspaceButton}
-                        onClick={onCreateProject}
+                        onClick={onStartCreateProject}
                     >
                         + New workspace
                     </button>
@@ -172,14 +172,21 @@ export default function Sidebar({
 
 
             <div className={styles.sidebarBottom}>
+                <NavLink
+                    to="/app/notifications"
+                    className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""
+                        }`
+                    }
+                >
+                    <Bell size={17} strokeWidth={1.9} />
+                    <span>Notifications</span>
+                </NavLink>
                 <a href="#" className={styles.navItem}>
                     <Search size={17} strokeWidth={1.9} />
                     <span>Search</span>
                 </a>
-                <a href="#" className={styles.navItem}>
-                    <Settings size={17} strokeWidth={1.9} />
-                    <span>Settings</span>
-                </a>
+
 
                 <div className={styles.profile}>
                     <div className={styles.avatar}>

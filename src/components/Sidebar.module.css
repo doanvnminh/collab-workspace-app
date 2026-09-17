@@ -286,64 +286,6 @@
     font-size: 10px;
 }
 
-.workspaceMenuWrapper {
-    position: relative;
-}
-
-.workspaceMenuButton {
-    display: grid;
-    width: 30px;
-    height: 30px;
-    place-items: center;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    color: #9999a3;
-    cursor: pointer;
-}
-
-.workspaceMenuButton:hover {
-    background: #eeeeF3;
-    color: #454550;
-}
-
-.workspaceMenu {
-    position: absolute;
-    z-index: 20;
-    top: 34px;
-    right: 0;
-    width: 130px;
-    padding: 5px;
-    border: 1px solid #e4e4ea;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 8px 24px rgba(30, 30, 45, 0.14);
-}
-
-.workspaceMenu button {
-    display: block;
-    width: 100%;
-    border: none;
-    border-radius: 5px;
-    padding: 9px 10px;
-    background: transparent;
-    color: #4f4f59;
-    text-align: left;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.workspaceMenu button:hover {
-    background: #f4f4f7;
-}
-
-.workspaceMenu .deleteMenuItem {
-    color: #c0392b;
-}
-
-.workspaceMenu .deleteMenuItem:hover {
-    background: #fff0ef;
-}
 
 .newWorkspaceButton {
     margin-top: 5px;
@@ -357,4 +299,29 @@
 
 .newWorkspaceButton:hover {
     color: #5145d8;
+}
+
+.workspaceCreateForm {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #f0efff;
+    color: #5145d8;
+}
+
+.workspaceCreateInput {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #454550;
+    font: inherit;
+    font-size: 13px;
+}
+
+.workspaceCreateInput::placeholder {
+    color: #9999a3;
 }

@@ -8,6 +8,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RegisterPage from "./pages/RegisterPage";
 import ContributorsPage from "./pages/ContributorsPage";
 import NotificationsPage from "./pages/NotificationsPage";
+import SettingPage from "./pages/SettingPage";
+import CollaborationTestPage from "./pages/CollaborationTestPage";
 
 function App() {
   return (
@@ -23,6 +25,11 @@ function App() {
           <Route path="documents/:documentId" element={<DocumentPage />} />
           <Route path="contributors" element={<ContributorsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="settings" element={<SettingPage />} />
+          <Route
+            path="collaboration-test"
+            element={<CollaborationTestPage />}
+          />
         </Route>
       </Route>
 

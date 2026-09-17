@@ -1,4 +1,4 @@
-import { Bell, FileText, Users } from "lucide-react";
+import { FileText, Users, Settings } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import styles from "./WorkspaceNavbar.module.css";
 
@@ -14,10 +14,11 @@ const links = [
         path: "/app/contributors",
         icon: Users,
     },
+
     {
-        label: "Notifications",
-        path: "/app/notifications",
-        icon: Bell,
+        label: "Settings",
+        path: "/app/settings",
+        icon: Settings,
     },
 ];
 

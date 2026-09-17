@@ -51,7 +51,7 @@ export default function Topbar({
                             </button>
                         ))}
 
-                        <div className={styles.menuDivider} />
+                        {/*<div className={styles.menuDivider} />
 
                         <button
                             type="button"
@@ -59,7 +59,7 @@ export default function Topbar({
                             onClick={onCreateProject}
                         >
                             + New workspace
-                        </button>
+                        </button>*/}
                     </div>
                 )}
             </div>

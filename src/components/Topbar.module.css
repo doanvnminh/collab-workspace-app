@@ -176,11 +176,11 @@ kbd {
     font-weight: 650;
 }
 
-.menuDivider {
+/*.menuDivider {
     height: 1px;
     margin: 6px 0;
     background: #eeeeF2;
-}
+}*/
 
 .createWorkspaceButton {
     color: #5b4fe9;

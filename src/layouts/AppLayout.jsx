@@ -14,6 +14,7 @@ import styles from "./AppLayout.module.css";
 export default function AppLayout({ title }) {
     const [projects, setProjects] = useState([]);
     const [activeProjectId, setActiveProjectId] = useState("");
+    const [isCreatingProject, setIsCreatingProject] = useState(false);
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -36,16 +37,24 @@ export default function AppLayout({ title }) {
         loadProjects();
     }, []);
 
-    async function handleCreateProject() {
-        const name = window.prompt("Enter a workspace name:");
+    function startCreatingProject() {
+        setIsCreatingProject(true);
+    }
 
-        if (!name || !name.trim()) {
-            return;
+    function cancelCreatingProject() {
+        setIsCreatingProject(false);
+    }
+
+    async function handleCreateProject(name) {
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            return false;
         }
 
         try {
             const project = await createProject({
-                name: name.trim(),
+                name: trimmedName,
             });
 
             setProjects((currentProjects) => [
@@ -54,8 +63,12 @@ export default function AppLayout({ title }) {
             ]);
 
             setActiveProjectId(project._id);
+            setIsCreatingProject(false);
+
+            return true;
         } catch (error) {
-            window.alert(error.message);
+            window.alert(error.message || "Failed to create workspace.");
+            return false;
         }
     }
 
@@ -67,37 +80,27 @@ export default function AppLayout({ title }) {
         }
     }
 
-    async function handleRenameProject(projectId, currentName) {
-        const newName = window.prompt(
-            "Enter a new workspace name:",
-            currentName
+    async function handleRenameProject(projectId, newName) {
+        const trimmedName = newName.trim();
+
+        if (!trimmedName) {
+            throw new Error("Workspace name cannot be empty.");
+        }
+
+        const updatedProject = await renameProject(
+            projectId,
+            trimmedName
         );
 
-        if (newName === null) {
-            return;
-        }
+        setProjects((currentProjects) =>
+            currentProjects.map((project) =>
+                project._id === projectId
+                    ? { ...project, name: updatedProject.name }
+                    : project
+            )
+        );
 
-        if (!newName.trim()) {
-            window.alert("Workspace name cannot be empty.");
-            return;
-        }
-
-        try {
-            const updatedProject = await renameProject(
-                projectId,
-                newName.trim()
-            );
-
-            setProjects((currentProjects) =>
-                currentProjects.map((project) =>
-                    project._id === projectId
-                        ? { ...project, name: updatedProject.name }
-                        : project
-                )
-            );
-        } catch (error) {
-            window.alert(error.message || "Failed to rename workspace.");
-        }
+        return updatedProject;
     }
 
     async function handleDeleteProject(projectId) {
@@ -139,8 +142,11 @@ export default function AppLayout({ title }) {
                 activeProjectId={activeProjectId}
                 onSelectProject={handleProjectChange}
                 onCreateProject={handleCreateProject}
-                onRenameProject={handleRenameProject}
-                onDeleteProject={handleDeleteProject}
+                isCreatingProject={isCreatingProject}
+                onStartCreateProject={startCreatingProject}
+                onSubmitCreateProject={handleCreateProject}
+                onCancelCreateProject={cancelCreatingProject}
+
             />
 
             <div className={styles.main}>
@@ -149,7 +155,7 @@ export default function AppLayout({ title }) {
                     projects={projects}
                     activeProjectId={activeProjectId}
                     onSelectProject={handleProjectChange}
-                    onCreateProject={handleCreateProject}
+                    onCreateProject={startCreatingProject}
                 />
 
                 <WorkspaceNavbar />
@@ -160,6 +166,8 @@ export default function AppLayout({ title }) {
                             projects,
                             activeProjectId,
                             setActiveProjectId,
+                            onRenameProject: handleRenameProject,
+                            onDeleteProject: handleDeleteProject,
                         }}
                     />
                 </main>
