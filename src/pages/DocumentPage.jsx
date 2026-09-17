@@ -49,8 +49,6 @@ export default function DocumentPage() {
                 All documents
             </button>
 
-
-
             <h1 className={styles.title}>
                 {title || "Untitled document"}
             </h1>
