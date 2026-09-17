@@ -12,6 +12,10 @@ import jwt from "jsonwebtoken";
 import Document from "./models/Document.js";
 import Project from "./models/Project.js";
 import User from "./models/User.js";
+import { WebSocketServer } from "ws";
+import { createRequire } from "node:module";
+import { yjsPersistence } from "./collaboration/yjsPersistence.js";
+import { dirname, join } from "node:path";
 
 dotenv.config();
 
@@ -20,11 +24,64 @@ const PORT = process.env.PORT || 5000;
 
 const httpServer = createServer(app);
 
+const require = createRequire(import.meta.url);
+
+const yWebsocketMainPath = require.resolve("y-websocket");
+const yWebsocketPackageRoot = dirname(
+    dirname(yWebsocketMainPath)
+);
+
+const {
+    setupWSConnection,
+    setPersistence,
+} = require(
+    join(
+        yWebsocketPackageRoot,
+        "bin",
+        "utils.js"
+    )
+);
+
 const io = new Server(httpServer, {
     cors: {
         origin: "http://localhost:5173",
         methods: ["GET", "POST"],
     },
+});
+
+const yjsWss = new WebSocketServer({
+    noServer: true,
+});
+
+setPersistence(yjsPersistence);
+
+yjsWss.on("connection", (connection, request) => {
+    setupWSConnection(connection, request);
+});
+
+httpServer.on("upgrade", (request, socket, head) => {
+    const requestUrl = new URL(
+        request.url || "/",
+        "http://127.0.0.1"
+    );
+
+    // Let Socket.IO handle its own WebSocket path.
+    if (requestUrl.pathname.startsWith("/socket.io")) {
+        return;
+    }
+
+    yjsWss.handleUpgrade(
+        request,
+        socket,
+        head,
+        (webSocket) => {
+            yjsWss.emit(
+                "connection",
+                webSocket,
+                request
+            );
+        }
+    );
 });
 
 async function broadcastPresence(room) {

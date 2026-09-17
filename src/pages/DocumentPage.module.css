@@ -100,3 +100,26 @@
     color: #888894;
     font-size: 13px;
 }
+
+.titleSection {
+    margin-bottom: 1.5rem;
+}
+
+.titleInput {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #17171c;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.titleInput:focus {
+    border-bottom: 2px solid #5b4fe9;
+}
+
+.titleStatus {
+    color: #888;
+    font-size: 0.85rem;
+}

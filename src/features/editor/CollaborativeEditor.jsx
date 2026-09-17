@@ -59,7 +59,7 @@ export default function CollaborativeEditor({
     const provider = useMemo(
         () =>
             new WebsocketProvider(
-                "ws://127.0.0.1:1234",
+                "ws://127.0.0.1:5000",
                 roomName,
                 ydoc
             ),

@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./DocumentPage.module.css";
-import { getDocument } from "../services/apiClient";
+import { getDocument, updateDocument } from "../services/apiClient";
 import CollaborativeEditor from "../features/editor/CollaborativeEditor";
 
 
@@ -13,6 +13,7 @@ export default function DocumentPage() {
     const [title, setTitle] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    const [titleStatus, setTitleStatus] = useState("");
 
     useEffect(() => {
         async function loadDocument() {
@@ -28,6 +29,24 @@ export default function DocumentPage() {
 
         loadDocument();
     }, [documentId]);
+
+    async function handleTitleBlur() {
+        const nextTitle = title.trim() || "Untitled document";
+
+        setTitle(nextTitle);
+        setTitleStatus("Saving...");
+
+        try {
+            await updateDocument(documentId, {
+                title: nextTitle,
+            });
+
+            setTitleStatus("Saved");
+        } catch (error) {
+            console.error(error);
+            setTitleStatus("Failed to save");
+        }
+    }
 
 
     if (isLoading) {
@@ -49,9 +68,21 @@ export default function DocumentPage() {
                 All documents
             </button>
 
-            <h1 className={styles.title}>
-                {title || "Untitled document"}
-            </h1>
+            <div className={styles.titleSection}>
+                <input
+                    className={styles.titleInput}
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                    onBlur={handleTitleBlur}
+                    placeholder="Untitled document"
+                />
+
+                {titleStatus && (
+                    <span className={styles.titleStatus}>
+                        {titleStatus}
+                    </span>
+                )}
+            </div>
 
             <CollaborativeEditor
                 roomName={`document-${documentId}`}
