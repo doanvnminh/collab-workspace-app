@@ -6,6 +6,17 @@ import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import styles from "./CollaborativeEditor.module.css";
+import {
+    Bold,
+    Italic,
+    Heading1,
+    Heading2,
+    List,
+    ListOrdered,
+    Quote,
+    Undo2,
+    Redo2,
+} from "lucide-react";
 
 function getCurrentUser() {
     const savedUser = localStorage.getItem("user");
@@ -44,38 +55,153 @@ function getUserColor(name) {
     return colors[total % colors.length];
 }
 
-export default function CollaborativeEditor({
-    roomName = "collab-test-room",
+function ToolbarButton({
+    editor,
+    label,
+    Icon,
+    active = false,
+    disabled = false,
+    onClick,
 }) {
-    const currentUser = useMemo(() => getCurrentUser(), []);
-
-    const userName =
-        currentUser.name || currentUser.email || "Anonymous user";
-
-    const userColor = getUserColor(userName);
-
-    const ydoc = useMemo(() => new Y.Doc(), [roomName]);
-
-    const token = localStorage.getItem("token");
-
-    const provider = useMemo(
-        () =>
-            new WebsocketProvider(
-                "ws://127.0.0.1:5000",
-                roomName,
-                ydoc,
-                {
-                    params: {
-                        token: token || "",
-                    },
-                }
-            ),
-        [roomName, ydoc, token]
+    return (
+        <button
+            type="button"
+            title={label}
+            aria-label={label}
+            className={`${styles.toolbarButton} ${active ? styles.activeButton : ""
+                }`}
+            disabled={disabled}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={onClick}
+        >
+            <Icon size={17} strokeWidth={2} />
+        </button>
     );
+}
 
+function EditorToolbar({ editor }) {
+    if (!editor) {
+        return null;
+    }
 
-    const [connected, setConnected] = useState(() => provider.wsconnected);
+    return (
+        <div className={styles.toolbar}>
+            <div className={styles.toolbarGroup}>
+                <ToolbarButton
+                    editor={editor}
+                    label="Undo"
+                    Icon={Undo2}
+                    disabled={!editor.can().chain().focus().undo().run()}
+                    onClick={() => editor.chain().focus().undo().run()}
+                />
+
+                <ToolbarButton
+                    editor={editor}
+                    label="Redo"
+                    Icon={Redo2}
+                    disabled={!editor.can().chain().focus().redo().run()}
+                    onClick={() => editor.chain().focus().redo().run()}
+                />
+            </div>
+
+            <span className={styles.divider} />
+
+            <div className={styles.toolbarGroup}>
+                <ToolbarButton
+                    editor={editor}
+                    label="Bold"
+                    Icon={Bold}
+                    active={editor.isActive("bold")}
+                    onClick={() =>
+                        editor.chain().focus().toggleBold().run()
+                    }
+                />
+
+                <ToolbarButton
+                    editor={editor}
+                    label="Italic"
+                    Icon={Italic}
+                    active={editor.isActive("italic")}
+                    onClick={() =>
+                        editor.chain().focus().toggleItalic().run()
+                    }
+                />
+            </div>
+
+            <span className={styles.divider} />
+
+            <div className={styles.toolbarGroup}>
+                <ToolbarButton
+                    editor={editor}
+                    label="Heading 1"
+                    Icon={Heading1}
+                    active={editor.isActive("heading", { level: 1 })}
+                    onClick={() =>
+                        editor
+                            .chain()
+                            .focus()
+                            .toggleHeading({ level: 1 })
+                            .run()
+                    }
+                />
+
+                <ToolbarButton
+                    editor={editor}
+                    label="Heading 2"
+                    Icon={Heading2}
+                    active={editor.isActive("heading", { level: 2 })}
+                    onClick={() =>
+                        editor
+                            .chain()
+                            .focus()
+                            .toggleHeading({ level: 2 })
+                            .run()
+                    }
+                />
+
+                <ToolbarButton
+                    editor={editor}
+                    label="Bullet list"
+                    Icon={List}
+                    active={editor.isActive("bulletList")}
+                    onClick={() =>
+                        editor.chain().focus().toggleBulletList().run()
+                    }
+                />
+
+                <ToolbarButton
+                    editor={editor}
+                    label="Numbered list"
+                    Icon={ListOrdered}
+                    active={editor.isActive("orderedList")}
+                    onClick={() =>
+                        editor.chain().focus().toggleOrderedList().run()
+                    }
+                />
+
+                <ToolbarButton
+                    editor={editor}
+                    label="Quote"
+                    Icon={Quote}
+                    active={editor.isActive("blockquote")}
+                    onClick={() =>
+                        editor.chain().focus().toggleBlockquote().run()
+                    }
+                />
+            </div>
+        </div>
+    );
+}
+
+function CollaborativeEditorSession({
+    ydoc,
+    provider,
+    userName,
+    userColor,
+}) {
+    const [connected, setConnected] = useState(provider.wsconnected);
     const [activeUsers, setActiveUsers] = useState([]);
+    const [, setEditorVersion] = useState(0);
 
     const editor = useEditor({
         extensions: [
@@ -95,57 +221,64 @@ export default function CollaborativeEditor({
                 },
             }),
         ],
+
+        onTransaction() {
+            setEditorVersion((version) => version + 1);
+        },
     });
 
     useEffect(() => {
+        const awareness = provider.awareness;
+
+        const localUser = {
+            name: userName,
+            color: userColor,
+        };
+
         function updateActiveUsers() {
-            const users = Array.from(
-                provider.awareness.getStates().values()
-            )
+            const users = Array.from(awareness.getStates().values())
                 .map((state) => state.user)
                 .filter(Boolean);
+
+            // Always show the current user, even before the server syncs awareness.
+            if (users.length === 0) {
+                users.push(localUser);
+            }
 
             setActiveUsers(users);
         }
 
+        function registerLocalUser() {
+            awareness.setLocalState({
+                user: localUser,
+            });
+
+            updateActiveUsers();
+        }
+
         function handleStatus({ status }) {
-            console.log("Yjs status:", status);
             setConnected(status === "connected");
+
+            if (status === "connected") {
+                registerLocalUser();
+            }
         }
 
-        function handleConnectionError(error) {
-            console.error("Yjs connection error:", error);
-        }
-
-        function handleConnectionClose(event) {
-            console.error("Yjs connection closed:", event);
-        }
-
-        provider.awareness.on("change", updateActiveUsers);
         provider.on("status", handleStatus);
-        provider.on("connection-error", handleConnectionError);
-        provider.on("connection-close", handleConnectionClose);
 
-        // Handles the case where the provider connected
-        // before this effect registered its listeners.
-        setConnected(provider.wsconnected);
+        awareness.on("change", updateActiveUsers);
+        awareness.on("update", updateActiveUsers);
 
-        updateActiveUsers();
-
-        if (!provider.wsconnected && !provider.wsconnecting) {
-            provider.connect();
-        }
+        registerLocalUser();
 
         return () => {
-            provider.awareness.off("change", updateActiveUsers);
-            provider.off("status", handleStatus);
-            provider.off("connection-error", handleConnectionError);
-            provider.off("connection-close", handleConnectionClose);
+            awareness.setLocalState(null);
 
-            // Disconnect instead of destroying the memoized provider.
-            provider.disconnect();
+            awareness.off("change", updateActiveUsers);
+            awareness.off("update", updateActiveUsers);
+            provider.off("status", handleStatus);
         };
-    }, [provider]);
+    }, [provider, userName, userColor]);
 
     if (!editor) {
         return <p>Loading collaborative editor...</p>;
@@ -155,9 +288,7 @@ export default function CollaborativeEditor({
         <section className={styles.wrapper}>
             <div className={styles.statusBar}>
                 <span>
-                    {connected
-                        ? "Connected"
-                        : "Connecting..."}
+                    {connected ? "Connected" : "Connecting..."}
                 </span>
 
                 <span>
@@ -166,10 +297,65 @@ export default function CollaborativeEditor({
                 </span>
             </div>
 
+            <EditorToolbar editor={editor} />
+
             <EditorContent
                 editor={editor}
                 className={styles.editor}
             />
         </section>
+    );
+}
+
+export default function CollaborativeEditor({
+    roomName = "collab-test-room",
+}) {
+    const currentUser = useMemo(() => getCurrentUser(), []);
+
+    const userName =
+        currentUser.name || currentUser.email || "Anonymous user";
+
+    const userColor = getUserColor(userName);
+    const token = localStorage.getItem("token");
+
+    const [collaboration, setCollaboration] = useState(null);
+
+    useEffect(() => {
+        const ydoc = new Y.Doc();
+
+        const provider = new WebsocketProvider(
+            "ws://127.0.0.1:5000",
+            roomName,
+            ydoc,
+            {
+                params: {
+                    token: token || "",
+                },
+            }
+        );
+
+        setCollaboration({
+            ydoc,
+            provider,
+        });
+
+        return () => {
+            provider.awareness.setLocalState(null);
+            provider.destroy();
+            ydoc.destroy();
+        };
+    }, [roomName, token]);
+
+    if (!collaboration) {
+        return <p>Loading collaborative editor...</p>;
+    }
+
+    return (
+        <CollaborativeEditorSession
+            ydoc={collaboration.ydoc}
+            provider={collaboration.provider}
+            userName={userName}
+            userColor={userColor}
+        />
     );
 }

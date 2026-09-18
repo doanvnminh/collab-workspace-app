@@ -134,6 +134,8 @@ export default function AppLayout({ title }) {
     );
 
     const workspaceTitle = activeProject?.name || title;
+    const isDocumentPage =
+        location.pathname.startsWith("/app/documents/");
 
     return (
         <div className={styles.app}>
@@ -158,7 +160,7 @@ export default function AppLayout({ title }) {
                     onCreateProject={startCreatingProject}
                 />
 
-                <WorkspaceNavbar />
+                {!isDocumentPage && <WorkspaceNavbar />}
 
                 <main className={styles.content}>
                     <Outlet
