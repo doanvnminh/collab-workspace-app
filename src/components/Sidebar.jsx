@@ -1,26 +1,12 @@
 import {
-    FileText,
-    Folder,
-    Plus,
     Search,
-    Settings,
-    Share2,
-    Star,
-    Trash2,
     Bell,
-
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
 import LogoutButton from "./LogoutButton";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
-const navigation = [
-    { label: "All documents", icon: FileText },
-    { label: "Shared with me", icon: Share2 },
-    { label: "Favorites", icon: Star },
-    { label: "Trash", icon: Trash2 },
-];
 
 
 export default function Sidebar({
@@ -43,7 +29,7 @@ export default function Sidebar({
         ? JSON.parse(savedUser)
         : null
 
-    const currentUserId = currentUser?._id || currentUser?.id
+
 
     async function handleWorkspaceSubmit(event) {
         event.preventDefault();
@@ -70,12 +56,12 @@ export default function Sidebar({
                 <span>CollabDocs</span>
             </div>
 
-            <button className={styles.newButton} type="button">
+            {/*<button className={styles.newButton} type="button">
                 <Plus size={17} />
                 New document
-            </button>
+            </button>*/}
 
-            <nav className={styles.navigation} aria-label="Main navigation">
+            {/*<nav className={styles.navigation} aria-label="Main navigation">
                 {navigation.map(({ label, icon: Icon }, index) => (
                     <a
                         href="#"
@@ -86,7 +72,7 @@ export default function Sidebar({
                         <span>{label}</span>
                     </a>
                 ))}
-            </nav>
+            </nav>*/}
 
             <div className={styles.section}>
                 <div className={styles.sectionHeadingRow}>
@@ -146,7 +132,7 @@ export default function Sidebar({
                                         }`}
                                     onClick={() => {
                                         onSelectProject(project._id);
-                                        setOpenMenuId(null);
+
                                     }}
                                 >
                                     <span className={styles.workspaceIcon}>●</span>

@@ -20,7 +20,7 @@ export function authenticate(req, res, next) {
         req.userId = decodedToken.userId;
 
         next();
-    } catch (error) {
+    } catch {
         return res.status(401).json({
             message: "Invalid or expired token",
         });

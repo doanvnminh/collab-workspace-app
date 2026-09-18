@@ -36,7 +36,24 @@ router.get("/", async (req, res) => {
             project: projectId,
         }).sort({ updatedAt: -1 });
 
-        res.json(documents);
+        const userId = req.userId.toString();
+
+        const documentsWithFavoriteStatus = documents.map((document) => {
+            const data =
+                typeof document.toObject === "function"
+                    ? document.toObject()
+                    : document;
+
+            return {
+                ...data,
+                isFavorite: (document.favoritedBy || []).some(
+                    (favoriteUserId) =>
+                        favoriteUserId.toString() === userId
+                ),
+            };
+        });
+
+        res.json(documentsWithFavoriteStatus);
     } catch (error) {
         console.error(error);
 
@@ -70,15 +87,6 @@ router.get("/:id", async (req, res) => {
                 message: "You do not have access to this document",
             });
         }
-
-        const currentUserId = String(req.userId);
-
-        const isOwner =
-            String(project.owner) === currentUserId;
-
-        const member = project.members.find(
-            (item) => String(item.user) === currentUserId
-        );
 
         res.json(document);
     } catch (error) {
@@ -157,8 +165,13 @@ router.put("/:id", async (req, res) => {
             });
         }
 
-        document.title = req.body.title;
-        document.content = req.body.content;
+        if (typeof req.body.title === "string") {
+            document.title = req.body.title;
+        }
+
+        if (typeof req.body.content === "string") {
+            document.content = req.body.content;
+        }
 
         await document.save();
 
@@ -204,6 +217,64 @@ router.delete("/:id", async (req, res) => {
 
         res.status(500).json({
             message: "Failed to delete document",
+        });
+    }
+});
+
+router.patch("/:id/favorite", async (req, res) => {
+    try {
+        const document = await Document.findById(req.params.id);
+
+        if (!document) {
+            return res.status(404).json({
+                message: "Document not found",
+            });
+        }
+
+        const project = await Project.findOne({
+            _id: document.project,
+            $or: [
+                { owner: req.userId },
+                { "members.user": req.userId },
+            ],
+        });
+
+        if (!project) {
+            return res.status(403).json({
+                message: "You do not have access to this document",
+            });
+        }
+
+        if (!document.favoritedBy) {
+            document.favoritedBy = [];
+        }
+
+        const userId = req.userId.toString();
+
+        const favoriteIndex = document.favoritedBy.findIndex(
+            (id) => id.toString() === userId
+        );
+
+        let isFavorite;
+
+        if (favoriteIndex === -1) {
+            document.favoritedBy.push(req.userId);
+            isFavorite = true;
+        } else {
+            document.favoritedBy.splice(favoriteIndex, 1);
+            isFavorite = false;
+        }
+
+        await document.save();
+
+        res.json({
+            isFavorite,
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to update favorite",
         });
     }
 });

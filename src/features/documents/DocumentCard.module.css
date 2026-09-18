@@ -187,3 +187,45 @@
     font-size: 12px;
     font-weight: 650;
 }
+
+.favoriteButton {
+    position: absolute;
+    top: 14px;
+    right: 44px;
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+
+    background: transparent;
+    color: #9aa0ad;
+    cursor: pointer;
+
+    opacity: 0;
+    transition:
+        opacity 0.15s ease,
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+.documentCard:hover .favoriteButton,
+.documentCard:focus-within .favoriteButton,
+.favoriteButtonActive {
+    opacity: 1;
+}
+
+.favoriteButton:hover {
+    background: #f1efff;
+    color: #5b4fe9;
+}
+
+.favoriteButtonActive {
+    color: #f2b01e;
+}

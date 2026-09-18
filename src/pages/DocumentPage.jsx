@@ -85,6 +85,7 @@ export default function DocumentPage() {
             </div>
 
             <CollaborativeEditor
+                documentId={documentId}
                 roomName={`document-${documentId}`}
             />
         </section>

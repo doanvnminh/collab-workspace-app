@@ -10,12 +10,12 @@ import ContributorsPage from "./pages/ContributorsPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import SettingPage from "./pages/SettingPage";
 import CollaborationTestPage from "./pages/CollaborationTestPage";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/app" replace />} />
-
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 

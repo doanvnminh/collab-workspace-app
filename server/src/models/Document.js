@@ -31,6 +31,12 @@ const documentSchema = new mongoose.Schema(
             default: null,
             select: false,
         },
+        favoritedBy: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
     },
     {
         timestamps: true,

@@ -1,7 +1,8 @@
-import { Clock3, FileText, MoreHorizontal } from "lucide-react";
-import styles from "./document.module.css";
+import { Clock3, FileText, MoreHorizontal, Star, } from "lucide-react";
+import styles from "./DocumentCard.module.css";
 
-export default function DocumentCard({ document, view, onOpen, onDelete }) {
+export default function DocumentCard({ document, view, onOpen, onDelete, onToggleFavorite }) {
+
     const cardClassName = `${styles.documentCard} ${view === "list" ? styles.listCard : ""
         }`;
 
@@ -42,6 +43,28 @@ export default function DocumentCard({ document, view, onOpen, onDelete }) {
 
                     </div>
                 </div>
+            </button>
+
+
+            <button
+                type="button"
+                className={`${styles.favoriteButton} ${document.isFavorite ? styles.favoriteButtonActive : ""
+                    }`}
+                aria-label={
+                    document.isFavorite
+                        ? "Remove from favorites"
+                        : "Add to favorites"
+                }
+                aria-pressed={document.isFavorite}
+                onClick={(event) => {
+                    event.stopPropagation();
+                    onToggleFavorite(document._id);
+                }}
+            >
+                <Star
+                    size={17}
+                    fill={document.isFavorite ? "currentColor" : "none"}
+                />
             </button>
 
             <button

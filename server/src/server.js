@@ -10,13 +10,15 @@ import invitationRoutes from "./routes/invitationRoutes.js";
 import jwt from "jsonwebtoken";
 import Document from "./models/Document.js";
 import Project from "./models/Project.js";
-import User from "./models/User.js";
 import { WebSocketServer } from "ws";
 import { createRequire } from "node:module";
 import { yjsPersistence } from "./collaboration/yjsPersistence.js";
 import { dirname, join } from "node:path";
 
 dotenv.config();
+
+const CLIENT_URL =
+    process.env.CLIENT_URL || "http://localhost:5173";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -140,7 +142,7 @@ httpServer.on("upgrade", async (request, socket, head) => {
 
 
 
-app.use(cors());
+app.use(cors({ origin: CLIENT_URL }));
 app.use(express.json());
 
 app.use("/api/documents", documentRoutes);

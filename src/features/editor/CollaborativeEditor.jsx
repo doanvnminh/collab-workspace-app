@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Collaboration from "@tiptap/extension-collaboration";
@@ -6,6 +6,7 @@ import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import styles from "./CollaborativeEditor.module.css";
+import { updateDocument } from "../../services/apiClient";
 import {
     Bold,
     Italic,
@@ -56,7 +57,7 @@ function getUserColor(name) {
 }
 
 function ToolbarButton({
-    editor,
+
     label,
     Icon,
     active = false,
@@ -194,6 +195,7 @@ function EditorToolbar({ editor }) {
 }
 
 function CollaborativeEditorSession({
+    documentId,
     ydoc,
     provider,
     userName,
@@ -202,6 +204,8 @@ function CollaborativeEditorSession({
     const [connected, setConnected] = useState(provider.wsconnected);
     const [activeUsers, setActiveUsers] = useState([]);
     const [, setEditorVersion] = useState(0);
+
+    const previewSaveTimeoutRef = useRef(null);
 
     const editor = useEditor({
         extensions: [
@@ -225,7 +229,32 @@ function CollaborativeEditorSession({
         onTransaction() {
             setEditorVersion((version) => version + 1);
         },
+
+        onUpdate({ editor }) {
+            const html = editor.getHTML();
+
+            clearTimeout(previewSaveTimeoutRef.current);
+
+            previewSaveTimeoutRef.current = setTimeout(async () => {
+                try {
+                    await updateDocument(documentId, {
+                        content: html,
+                    });
+                } catch (error) {
+                    console.error(
+                        "Failed to update document preview:",
+                        error
+                    );
+                }
+            }, 800);
+        },
     });
+
+    useEffect(() => {
+        return () => {
+            clearTimeout(previewSaveTimeoutRef.current);
+        };
+    }, []);
 
     useEffect(() => {
         const awareness = provider.awareness;
@@ -280,6 +309,7 @@ function CollaborativeEditorSession({
         };
     }, [provider, userName, userColor]);
 
+
     if (!editor) {
         return <p>Loading collaborative editor...</p>;
     }
@@ -308,6 +338,7 @@ function CollaborativeEditorSession({
 }
 
 export default function CollaborativeEditor({
+    documentId,
     roomName = "collab-test-room",
 }) {
     const currentUser = useMemo(() => getCurrentUser(), []);
@@ -320,11 +351,15 @@ export default function CollaborativeEditor({
 
     const [collaboration, setCollaboration] = useState(null);
 
+    const yjsUrl =
+        import.meta.env.VITE_YJS_URL ||
+        "ws://127.0.0.1:5000";
+
     useEffect(() => {
         const ydoc = new Y.Doc();
 
         const provider = new WebsocketProvider(
-            "ws://127.0.0.1:5000",
+            yjsUrl,
             roomName,
             ydoc,
             {
@@ -334,6 +369,7 @@ export default function CollaborativeEditor({
             }
         );
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCollaboration({
             ydoc,
             provider,
@@ -344,7 +380,7 @@ export default function CollaborativeEditor({
             provider.destroy();
             ydoc.destroy();
         };
-    }, [roomName, token]);
+    }, [roomName, token, yjsUrl]);
 
     if (!collaboration) {
         return <p>Loading collaborative editor...</p>;
@@ -352,6 +388,8 @@ export default function CollaborativeEditor({
 
     return (
         <CollaborativeEditorSession
+            key={roomName}
+            documentId={documentId}
             ydoc={collaboration.ydoc}
             provider={collaboration.provider}
             userName={userName}

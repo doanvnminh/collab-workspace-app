@@ -37,7 +37,7 @@ export default function InviteMember({ projectId }) {
 
             setSuccess("Invitation sent successfully.");
             setEmail("");
-            setRole("viewer");
+
         } catch (err) {
             setError(err.message || "Failed to send invitation.");
         } finally {

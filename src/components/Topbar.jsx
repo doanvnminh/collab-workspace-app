@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell, ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import styles from "./Topbar.module.css";
 
 export default function Topbar({
@@ -7,7 +7,6 @@ export default function Topbar({
     projects = [],
     activeProjectId,
     onSelectProject,
-    onCreateProject,
 }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 

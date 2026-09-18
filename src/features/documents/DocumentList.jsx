@@ -1,5 +1,5 @@
 import DocumentCard from "./DocumentCard";
-import styles from "./document.module.css";
+import styles from "./DocumentCard.module.css";
 
 export default function DocumentList({
     documents,
@@ -7,6 +7,7 @@ export default function DocumentList({
     onOpenDocument,
     onCreateDocument,
     onDeleteDocument,
+    onToggleFavorite
 }) {
     if (documents.length === 0) {
         return (
@@ -30,6 +31,7 @@ export default function DocumentList({
                     view={view}
                     onOpen={() => onOpenDocument(document)}
                     onDelete={() => onDeleteDocument(document._id)}
+                    onToggleFavorite={onToggleFavorite}
                 />
             ))}
         </div>

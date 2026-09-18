@@ -94,12 +94,6 @@ router.post("/:projectId/invitations", async (req, res) => {
             });
         }
 
-        if (!["viewer", "editor"].includes(role)) {
-            return res.status(400).json({
-                message: "Role must be viewer or editor",
-            });
-        }
-
         const project = await Project.findOne({
             _id: req.params.projectId,
             owner: req.userId,
@@ -210,7 +204,7 @@ router.delete("/:projectId/members/:userId", async (req, res) => {
         res.json({
             message: "Contributor removed successfully",
         });
-    } catch (error) {
+    } catch {
         res.status(500).json({
             message: "Failed to remove contributor",
         });

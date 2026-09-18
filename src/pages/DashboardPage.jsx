@@ -6,7 +6,8 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import {
     createDocument as createDocumentRequest,
     getDocuments,
-    deleteDocument
+    deleteDocument,
+    toggleDocumentFavorite
 } from "../services/apiClient";
 
 
@@ -17,12 +18,17 @@ export default function DashboardPage() {
     const [view, setView] = useState("grid");
     const [isCreating, setIsCreating] = useState(false);
 
-    const { activeProjectId, setActiveProjectId } = useOutletContext()
+    const { activeProjectId } = useOutletContext()
 
     useEffect(() => {
+
         if (!activeProjectId) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setDocuments([]);
+
+
             setIsLoading(false);
+
             return;
         }
 
@@ -95,6 +101,26 @@ export default function DashboardPage() {
         }
     }
 
+    async function handleToggleFavorite(documentId) {
+        try {
+            const result = await toggleDocumentFavorite(documentId);
+
+            setDocuments((currentDocuments) =>
+                currentDocuments.map((document) =>
+                    document._id === documentId
+                        ? {
+                            ...document,
+                            isFavorite: result.isFavorite,
+                        }
+                        : document
+                )
+            );
+        } catch (error) {
+            window.alert(
+                error.message || "Failed to update favorite."
+            );
+        }
+    }
 
 
     function openDocument(document) {
@@ -162,6 +188,7 @@ export default function DashboardPage() {
                     onOpenDocument={openDocument}
                     onCreateDocument={createDocument}
                     onDeleteDocument={handleDelete}
+                    onToggleFavorite={handleToggleFavorite}
                 />
             )}
 

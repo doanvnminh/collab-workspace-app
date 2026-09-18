@@ -157,7 +157,7 @@ export default function AppLayout({ title }) {
                     projects={projects}
                     activeProjectId={activeProjectId}
                     onSelectProject={handleProjectChange}
-                    onCreateProject={startCreatingProject}
+
                 />
 
                 {!isDocumentPage && <WorkspaceNavbar />}

@@ -120,6 +120,10 @@ export default function ContributorsPage() {
                 </div>
             </div>
 
+            {actionError && (
+                <p className={styles.error}>{actionError}</p>
+            )}
+
             <section className={styles.list}>
                 {contributors.map((contributor, index) => {
                     const user = contributor.user;
