@@ -13,6 +13,7 @@ function RegisterPage() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isRegistered, setIsRegistered] = useState(false);
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -32,7 +33,11 @@ function RegisterPage() {
                 password,
             });
 
-            navigate("/login");
+            setIsRegistered(true);
+
+            window.setTimeout(() => {
+                navigate("/login");
+            }, 1000);
         } catch (error) {
             setError(error.message);
         } finally {
@@ -47,81 +52,87 @@ function RegisterPage() {
             <p className={styles.subtitle}>
                 Start organizing your collaborative workspace.
             </p>
-
-            <form className={styles.form} onSubmit={handleSubmit}>
-                <div className={styles.field}>
-                    <label className={styles.label} htmlFor="name">
-                        Name
-                    </label>
-
-                    <input
-                        className={styles.input}
-                        id="name"
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        required
-                    />
+            {isRegistered ? (
+                <div className={styles.successMessage} role="status">
+                    <h2>Account created successfully</h2>
+                    <p>Redirecting you to login...</p>
                 </div>
+            ) : (
+                <form className={styles.form} onSubmit={handleSubmit}>
+                    <div className={styles.field}>
+                        <label className={styles.label} htmlFor="name">
+                            Name
+                        </label>
 
-                <div className={styles.field}>
-                    <label className={styles.label} htmlFor="register-email">
-                        Email
-                    </label>
+                        <input
+                            className={styles.input}
+                            id="name"
+                            value={name}
+                            onChange={(event) => setName(event.target.value)}
+                            required
+                        />
+                    </div>
 
-                    <input
-                        className={styles.input}
-                        id="register-email"
-                        type="email"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                        required
-                    />
-                </div>
+                    <div className={styles.field}>
+                        <label className={styles.label} htmlFor="register-email">
+                            Email
+                        </label>
 
-                <div className={styles.field}>
-                    <label className={styles.label} htmlFor="register-password">
-                        Password
-                    </label>
+                        <input
+                            className={styles.input}
+                            id="register-email"
+                            type="email"
+                            value={email}
+                            onChange={(event) => setEmail(event.target.value)}
+                            required
+                        />
+                    </div>
 
-                    <input
-                        className={styles.input}
-                        id="register-password"
-                        type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        minLength={6}
-                        required
-                    />
-                </div>
+                    <div className={styles.field}>
+                        <label className={styles.label} htmlFor="register-password">
+                            Password
+                        </label>
 
-                <div className={styles.field}>
-                    <label className={styles.label} htmlFor="confirm-password">
-                        Confirm password
-                    </label>
+                        <input
+                            className={styles.input}
+                            id="register-password"
+                            type="password"
+                            value={password}
+                            onChange={(event) => setPassword(event.target.value)}
+                            minLength={6}
+                            required
+                        />
+                    </div>
 
-                    <input
-                        className={styles.input}
-                        id="confirm-password"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(event) =>
-                            setConfirmPassword(event.target.value)
-                        }
-                        minLength={6}
-                        required
-                    />
-                </div>
+                    <div className={styles.field}>
+                        <label className={styles.label} htmlFor="confirm-password">
+                            Confirm password
+                        </label>
 
-                {error && <p className={styles.error}>{error}</p>}
+                        <input
+                            className={styles.input}
+                            id="confirm-password"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(event) =>
+                                setConfirmPassword(event.target.value)
+                            }
+                            minLength={6}
+                            required
+                        />
+                    </div>
 
-                <button
-                    className={styles.submitButton}
-                    type="submit"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? "Creating account..." : "Create account"}
-                </button>
-            </form>
+                    {error && <p className={styles.error}>{error}</p>}
+
+                    <button
+                        className={styles.submitButton}
+                        type="submit"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? "Creating account..." : "Create account"}
+                    </button>
+                </form>
+            )}
 
             <p className={styles.footer}>
                 Already have an account?{" "}
