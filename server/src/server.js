@@ -145,6 +145,13 @@ httpServer.on("upgrade", async (request, socket, head) => {
 app.use(cors({ origin: CLIENT_URL }));
 app.use(express.json());
 
+app.get("/api/health", (req, res) => {
+    res.json({
+        status: "ok",
+        message: "CollabDocs API is running",
+    });
+});
+
 app.use("/api/documents", documentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
