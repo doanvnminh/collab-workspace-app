@@ -7,7 +7,8 @@ import {
     createProject,
     getProjects,
     renameProject,
-    deleteProject
+    deleteProject,
+    getUnreadInvitationCount
 } from "../services/apiClient";
 import styles from "./AppLayout.module.css";
 
@@ -15,6 +16,8 @@ export default function AppLayout({ title }) {
     const [projects, setProjects] = useState([]);
     const [activeProjectId, setActiveProjectId] = useState("");
     const [isCreatingProject, setIsCreatingProject] = useState(false);
+    const [unreadNotificationCount, setUnreadNotificationCount] =
+        useState(0);
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -35,6 +38,46 @@ export default function AppLayout({ title }) {
         }
 
         loadProjects();
+    }, []);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        async function loadUnreadNotificationCount() {
+            try {
+                const data = await getUnreadInvitationCount();
+
+                if (isMounted) {
+                    setUnreadNotificationCount(data.count || 0);
+                }
+            } catch (error) {
+                console.error(
+                    "Failed to load notification count:",
+                    error
+                );
+            }
+        }
+
+        loadUnreadNotificationCount();
+
+        const intervalId = window.setInterval(
+            loadUnreadNotificationCount,
+            30000
+        );
+
+        window.addEventListener(
+            "focus",
+            loadUnreadNotificationCount
+        );
+
+        return () => {
+            isMounted = false;
+            window.clearInterval(intervalId);
+            window.removeEventListener(
+                "focus",
+                loadUnreadNotificationCount
+            );
+        };
     }, []);
 
     function startCreatingProject() {
@@ -148,7 +191,7 @@ export default function AppLayout({ title }) {
                 onStartCreateProject={startCreatingProject}
                 onSubmitCreateProject={handleCreateProject}
                 onCancelCreateProject={cancelCreatingProject}
-
+                notificationCount={unreadNotificationCount}
             />
 
             <div className={styles.main}>

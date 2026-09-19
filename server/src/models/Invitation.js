@@ -37,6 +37,10 @@ const invitationSchema = new mongoose.Schema(
             type: Date,
             default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         },
+        readAt: {
+            type: Date,
+            default: null,
+        }
     },
     {
         timestamps: true,

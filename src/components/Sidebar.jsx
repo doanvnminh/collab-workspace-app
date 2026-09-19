@@ -1,6 +1,7 @@
 import {
     Search,
     Bell,
+    BellDot,
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
 import LogoutButton from "./LogoutButton";
@@ -17,7 +18,7 @@ export default function Sidebar({
     onStartCreateProject,
     onSubmitCreateProject,
     onCancelCreateProject,
-
+    notificationCount = 0
 }) {
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
@@ -29,7 +30,7 @@ export default function Sidebar({
         ? JSON.parse(savedUser)
         : null
 
-
+    const NotificationIcon = notificationCount > 0 ? BellDot : Bell
 
     async function handleWorkspaceSubmit(event) {
         event.preventDefault();
@@ -165,8 +166,16 @@ export default function Sidebar({
                         }`
                     }
                 >
-                    <Bell size={17} strokeWidth={1.9} />
+                    <NotificationIcon size={18} />
                     <span>Notifications</span>
+
+                    {notificationCount > 0 && (
+                        <span className={styles.notificationBadge}>
+                            {notificationCount > 99
+                                ? "99+"
+                                : notificationCount}
+                        </span>
+                    )}
                 </NavLink>
                 <a href="#" className={styles.navItem}>
                     <Search size={17} strokeWidth={1.9} />

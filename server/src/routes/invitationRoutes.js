@@ -145,4 +145,32 @@ router.post("/:invitationId/decline", async (req, res) => {
     }
 });
 
+// Get unread invitation count
+router.get("/unread-count", async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select("email");
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+            });
+        }
+
+        const count = await Invitation.countDocuments({
+            email: user.email.toLowerCase(),
+            status: "pending",
+            readAt: null,
+            expiresAt: { $gt: new Date() },
+        });
+
+        res.json({ count });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to get unread notification count",
+        });
+    }
+});
+
 export default router;

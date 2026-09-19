@@ -162,3 +162,7 @@ export function toggleDocumentFavorite(documentId) {
         method: "PATCH",
     });
 }
+
+export function getUnreadInvitationCount() {
+    return request("/invitations/unread-count");
+}
