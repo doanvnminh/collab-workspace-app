@@ -19,6 +19,16 @@ export default function Topbar({
 
     return (
         <header className={styles.topbar}>
+            <button
+                type="button"
+                className={styles.mobileMenuButton}
+                aria-label="Open sidebar"
+                onClick={onOpenSidebar}
+            >
+                <Menu size={21} />
+            </button>
+
+
             <div className={styles.heading}>
                 <span className={styles.eyebrow}>Workspace</span>
 
