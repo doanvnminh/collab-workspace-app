@@ -173,4 +173,41 @@ router.get("/unread-count", async (req, res) => {
     }
 });
 
+// Mark current user's invitations as read
+router.patch("/read", async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select("email");
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+            });
+        }
+
+        await Invitation.updateMany(
+            {
+                email: user.email.toLowerCase(),
+                status: "pending",
+                readAt: null,
+                expiresAt: { $gt: new Date() },
+            },
+            {
+                $set: {
+                    readAt: new Date(),
+                },
+            }
+        );
+
+        res.json({
+            message: "Notifications marked as read",
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to mark notifications as read",
+        });
+    }
+});
+
 export default router;

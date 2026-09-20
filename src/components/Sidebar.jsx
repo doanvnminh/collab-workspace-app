@@ -2,6 +2,7 @@ import {
     Search,
     Bell,
     BellDot,
+    X,
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
 import LogoutButton from "./LogoutButton";
@@ -18,7 +19,10 @@ export default function Sidebar({
     onStartCreateProject,
     onSubmitCreateProject,
     onCancelCreateProject,
-    notificationCount = 0
+    notificationCount = 0,
+    onNotificationsOpen,
+    isMobileOpen = false,
+    onClose = () => { },
 }) {
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
@@ -51,7 +55,16 @@ export default function Sidebar({
     }
 
     return (
-        <aside className={styles.sidebar}>
+        <aside className={`${styles.sidebar} ${isMobileOpen ? styles.mobileOpen : ""
+            }`}>
+            <button
+                type="button"
+                className={styles.mobileCloseButton}
+                aria-label="Close navigation"
+                onClick={onClose}
+            >
+                <X size={20} />
+            </button>
             <div className={styles.brand}>
                 <div className={styles.brandMark}>C</div>
                 <span>CollabDocs</span>

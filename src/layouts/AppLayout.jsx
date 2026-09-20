@@ -8,7 +8,8 @@ import {
     getProjects,
     renameProject,
     deleteProject,
-    getUnreadInvitationCount
+    getUnreadInvitationCount,
+    markInvitationsAsRead
 } from "../services/apiClient";
 import styles from "./AppLayout.module.css";
 
@@ -18,6 +19,7 @@ export default function AppLayout({ title }) {
     const [isCreatingProject, setIsCreatingProject] = useState(false);
     const [unreadNotificationCount, setUnreadNotificationCount] =
         useState(0);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -117,10 +119,24 @@ export default function AppLayout({ title }) {
 
     function handleProjectChange(projectId) {
         setActiveProjectId(projectId);
+        setIsSidebarOpen(false);
 
         if (location.pathname.startsWith("/app/documents/")) {
             navigate("/app", { replace: true });
         }
+    }
+
+    function handleNotificationsOpen() {
+        // Hide the badge immediately
+        setUnreadNotificationCount(0);
+
+        // Persist the read status
+        markInvitationsAsRead().catch((error) => {
+            console.error(
+                "Failed to mark notifications as read:",
+                error
+            );
+        });
     }
 
     async function handleRenameProject(projectId, newName) {
@@ -182,6 +198,14 @@ export default function AppLayout({ title }) {
 
     return (
         <div className={styles.app}>
+            {isSidebarOpen && (
+                <button
+                    type="button"
+                    className={styles.mobileOverlay}
+                    aria-label="Close navigation"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
             <Sidebar
                 projects={projects}
                 activeProjectId={activeProjectId}
@@ -192,6 +216,9 @@ export default function AppLayout({ title }) {
                 onSubmitCreateProject={handleCreateProject}
                 onCancelCreateProject={cancelCreatingProject}
                 notificationCount={unreadNotificationCount}
+                onNotificationsOpen={handleNotificationsOpen}
+                isMobileOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
             />
 
             <div className={styles.main}>
@@ -200,7 +227,8 @@ export default function AppLayout({ title }) {
                     projects={projects}
                     activeProjectId={activeProjectId}
                     onSelectProject={handleProjectChange}
-
+                    onCreateProject={startCreatingProject}
+                    onOpenSidebar={() => setIsSidebarOpen(true)}
                 />
 
                 {!isDocumentPage && <WorkspaceNavbar />}

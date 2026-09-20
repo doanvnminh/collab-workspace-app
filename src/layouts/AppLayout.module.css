@@ -14,3 +14,27 @@
     padding: 32px;
     background: #ffffff;
 }
+
+.mobileOverlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobileOverlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        border: 0;
+        padding: 0;
+        background: rgba(15, 23, 42, 0.35);
+    }
+
+    .main {
+        width: 100%;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+}

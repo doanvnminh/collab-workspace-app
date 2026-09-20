@@ -166,3 +166,9 @@ export function toggleDocumentFavorite(documentId) {
 export function getUnreadInvitationCount() {
     return request("/invitations/unread-count");
 }
+
+export function markInvitationsAsRead() {
+    return request("/invitations/read", {
+        method: "PATCH",
+    });
+}
