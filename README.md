@@ -1,1 +1,1 @@
-mongodb password : LN0re4JbiorpY3ir
+mongodb password :
