@@ -7,7 +7,7 @@ export default function Topbar({
     projects = [],
     activeProjectId,
     onSelectProject,
-    onCreateProject,
+    //onCreateProject,
     onOpenSidebar,
 }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);

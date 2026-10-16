@@ -20,7 +20,7 @@ export default function Sidebar({
     onSubmitCreateProject,
     onCancelCreateProject,
     notificationCount = 0,
-    onNotificationsOpen,
+    //onNotificationsOpen,
     isMobileOpen = false,
     onClose = () => { },
 }) {
