@@ -1,12 +1,8 @@
-import express from "express";
-import cors from "cors";
+
 import dotenv from "dotenv";
 import { createServer } from "node:http";
-import documentRoutes from "./routes/documentRoutes.js";
+
 import { connectDB } from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js"
-import projectRoutes from "./routes/projectRoutes.js"
-import invitationRoutes from "./routes/invitationRoutes.js";
 import jwt from "jsonwebtoken";
 import Document from "./models/Document.js";
 import Project from "./models/Project.js";
@@ -14,13 +10,11 @@ import { WebSocketServer } from "ws";
 import { createRequire } from "node:module";
 import { yjsPersistence } from "./collaboration/yjsPersistence.js";
 import { dirname, join } from "node:path";
+import app from "./app.js"
 
 dotenv.config();
 
-const CLIENT_URL =
-    process.env.CLIENT_URL || "http://localhost:5173";
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 
 const httpServer = createServer(app);
@@ -142,20 +136,6 @@ httpServer.on("upgrade", async (request, socket, head) => {
 
 
 
-app.use(cors({ origin: CLIENT_URL }));
-app.use(express.json());
-
-app.get("/api/health", (req, res) => {
-    res.json({
-        status: "ok",
-        message: "CollabDocs API is running",
-    });
-});
-
-app.use("/api/documents", documentRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/projects", projectRoutes);
-app.use("/api/invitations", invitationRoutes);
 
 connectDB()
     .then(() => {
