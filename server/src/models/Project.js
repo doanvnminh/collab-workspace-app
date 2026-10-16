@@ -25,7 +25,7 @@ const projectSchema = new mongoose.Schema(
                 role: {
                     type: String,
                     enum: ["viewer", "editor"],
-                    default: "viewer",
+                    default: "editor",
                 },
             },
         ],
